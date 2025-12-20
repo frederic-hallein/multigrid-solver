@@ -3,4 +3,4 @@ project("multigrid-solver")
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(main src/main.cpp)
+add_executable(main src/main.cpp src/solver.cpp)
