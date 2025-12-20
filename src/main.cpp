@@ -3,6 +3,7 @@
 #include "logger.hpp"
 #include "solver.hpp"
 
+// TODO : write unit tests for these examples
 int main() {
     // std::vector<std::vector<double>> A = {
     //     {2, 1},

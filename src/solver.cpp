@@ -20,6 +20,8 @@ namespace solver {
         return true;
     }
 
+    // TODO : define other norms and call specific norm based on parameter choice
+    // See Ch2 p. 16: Matrix Norms
     bool is_converged(
         const std::vector<std::vector<double>>& A,
         const std::vector<double>& x,
@@ -59,7 +61,11 @@ namespace solver {
             }
 
             if (is_converged(A, y, b, tol)) {
-                logger::info("Jacobi method converged in " + std::to_string(k) + " iterations: x = {}", y);
+                logger::info(
+                    "Jacobi method converged in "
+                    + std::to_string(k)
+                    + " iterations: x = {}", y
+                );
                 x = y;
                 return;
             }
@@ -94,8 +100,8 @@ namespace solver {
                 logger::info(
                     "Gauss-Seidel method converged in "
                     + std::to_string(k)
-                    + " iterations: x = {}", x)
-                ;
+                    + " iterations: x = {}", x
+                );
                 return;
             }
         }

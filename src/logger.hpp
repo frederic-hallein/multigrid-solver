@@ -7,6 +7,7 @@
 #include <ctime>
 #include <sstream>
 
+// TODO : make {} usable for other types besides vector
 namespace logger {
     inline std::string current_time() {
         auto now = std::chrono::system_clock::now();
@@ -47,6 +48,18 @@ namespace logger {
 
     inline void warning(const std::string& msg) {
         std::cout << "[" << current_time() << "] [WARNING] " << msg << '\n';
+    }
+
+    template <typename T>
+    inline void warning(const std::string& msg, const std::vector<T>& vec) {
+        size_t pos = msg.find("{}");
+        if (pos != std::string::npos && !vec.empty()) {
+            std::string formatted = msg;
+            formatted.replace(pos, 2, format_vec(vec));
+            std::cout << "[" << current_time() << "] [WARNING] " << formatted << '\n';
+        } else {
+            std::cout << "[" << current_time() << "] [WARNING] " << msg << '\n';
+        }
     }
 
     inline void error(const std::string& msg) {
