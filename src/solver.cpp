@@ -71,6 +71,7 @@ namespace solver {
         std::vector<double> y(n);
         double res_norm = 0.0;
         for (int k = 1; k <= K_max; ++k) {
+            #pragma omp parallel for
             for (size_t j = 0; j < n; ++j) {
                 double sum = std::inner_product(A[j].begin(), A[j].end(), x.begin(), 0.0) - A[j][j] * x[j];
                 y[j] = (1.0 / A[j][j]) * (b[j] - sum);
