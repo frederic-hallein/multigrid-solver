@@ -3,11 +3,18 @@
 #include <string>
 
 namespace solver {
-    bool check_dimensions(
+    bool validate_dimensions(
         const std::vector<std::vector<double>>& A,
         const std::vector<double>& x,
-        const std::vector<double>& b,
-        const std::string& method_name
+        const std::vector<double>& b
+    );
+
+    double L2(const std::vector<double>& v);
+
+    std::vector<double> residual(
+        const std::vector<std::vector<double>>& A,
+        const std::vector<double>& x,
+        const std::vector<double>& b
     );
 
     bool is_converged(

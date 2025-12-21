@@ -6,7 +6,7 @@
 #include "solver.hpp"
 
 namespace solver {
-    bool check_dimensions(
+    bool validate_dimensions(
         const std::vector<std::vector<double>>& A,
         const std::vector<double>& x,
         const std::vector<double>& b
@@ -57,7 +57,7 @@ namespace solver {
         double tol
     )
     {
-        if (!check_dimensions(A, x, b)) {
+        if (!validate_dimensions(A, x, b)) {
             logger::error(
                 "Dimensions mismatch in Jacobi input: "
                 "A.size() = " + std::to_string(A.size()) +
@@ -107,7 +107,7 @@ namespace solver {
         double tol
     )
     {
-        if (!check_dimensions(A, x, b)) {
+        if (!validate_dimensions(A, x, b)) {
             logger::error(
                 "Dimensions mismatch in Gauss-Seidel input: "
                 "A.size() = " + std::to_string(A.size()) +
