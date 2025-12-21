@@ -9,24 +9,20 @@ namespace solver {
     bool check_dimensions(
         const std::vector<std::vector<double>>& A,
         const std::vector<double>& x,
-        const std::vector<double>& b,
-        const std::string& method_name)
+        const std::vector<double>& b
+    )
     {
         size_t n = x.size();
-        if (A.size() != n || b.size() != n) {
-            logger::error("Dimensions mismatch in " + method_name + " input.");
-            return false;
-        }
-        return true;
+        return (A.size() == n && b.size() == n);
     }
 
+    // TODO : define other norms
+    // (See Ch2 p. 16: Matrix Norms)
     double L2(const std::vector<double>& v) {
         return std::sqrt(std::inner_product(v.begin(), v.end(), v.begin(), 0.0));
     }
 
-    // TODO : define other norms and pass functions pointers to parameter
-    // (See Ch2 p. 16: Matrix Norms)
-    double residual_norm(
+    std::vector<double> residual(
         const std::vector<std::vector<double>>& A,
         const std::vector<double>& x,
         const std::vector<double>& b
@@ -40,7 +36,7 @@ namespace solver {
             }
             r[i] = b[i] - Ax;
         }
-        return L2(r);
+        return r;
     }
 
     bool is_converged(
@@ -50,7 +46,7 @@ namespace solver {
         double tol
     )
     {
-        return residual_norm(A, x, b) < tol;
+        return L2(residual(A, x, b)) < tol;
     }
 
     void jacobi(
@@ -61,23 +57,31 @@ namespace solver {
         double tol
     )
     {
-        if (!check_dimensions(A, x, b, "Jacobi")) return;
+        if (!check_dimensions(A, x, b)) {
+            logger::error(
+                "Dimensions mismatch in Jacobi input: "
+                "A.size() = " + std::to_string(A.size()) +
+                ", x.size() = " + std::to_string(x.size()) +
+                ", b.size() = " + std::to_string(b.size())
+            );
+            return;
+        }
 
         size_t n = x.size();
         std::vector<double> y(n);
-        double res = 0.0;
+        double res_norm = 0.0;
         for (int k = 1; k <= K_max; ++k) {
             for (size_t j = 0; j < n; ++j) {
                 double sum = std::inner_product(A[j].begin(), A[j].end(), x.begin(), 0.0) - A[j][j] * x[j];
                 y[j] = (1.0 / A[j][j]) * (b[j] - sum);
             }
 
-            res = residual_norm(A, y, b);
-            if (res < tol) {
+            res_norm = L2(residual(A, y, b));
+            if (res_norm < tol) {
                 logger::info(
                     "Jacobi method converged in "
                     + std::to_string(k) + " iterations "
-                    + "(res=" + std::to_string(res) + ", tol= " + std::to_string(tol) + "): "
+                    + "(res=" + std::to_string(res_norm) + ", tol= " + std::to_string(tol) + "): "
                     + "x = {}", x
                 );
                 x = y;
@@ -90,7 +94,8 @@ namespace solver {
         logger::error(
             "Jacobi method did not converge after "
             + std::to_string(K_max) + " iterations "
-            + "(res=" + std::to_string(res) + ", tol= " + std::to_string(tol) + "): x = {}", x
+            + "(res=" + std::to_string(res_norm) + ", tol= " + std::to_string(tol) + "): "
+            + "x = {}", x
         );
     }
 
@@ -102,21 +107,29 @@ namespace solver {
         double tol
     )
     {
-        if (!check_dimensions(A, x, b, "Gauss-Seidel")) return;
+        if (!check_dimensions(A, x, b)) {
+            logger::error(
+                "Dimensions mismatch in Gauss-Seidel input: "
+                "A.size() = " + std::to_string(A.size()) +
+                ", x.size() = " + std::to_string(x.size()) +
+                ", b.size() = " + std::to_string(b.size())
+            );
+            return;
+        }
 
-        double res = 0.0;
+        double res_norm = 0.0;
         for (int k = 1; k <= K_max; ++k) {
             for (size_t j = 0; j < x.size(); ++j) {
                 double sum = std::inner_product(A[j].begin(), A[j].end(), x.begin(), 0.0) - A[j][j] * x[j];
                 x[j] = (1.0 / A[j][j]) * (b[j] - sum);
             }
 
-            res = residual_norm(A, x, b);
-            if (res < tol) {
+            res_norm = L2(residual(A, x, b));
+            if (res_norm < tol) {
                 logger::info(
                     "Gauss-Seidel method converged in "
                     + std::to_string(k) + " iterations "
-                    + "(res=" + std::to_string(res) + ", tol= " + std::to_string(tol) + "): "
+                    + "(res=" + std::to_string(res_norm) + ", tol= " + std::to_string(tol) + "): "
                     + "x = {}", x
                 );
                 return;
@@ -126,7 +139,8 @@ namespace solver {
         logger::error(
             "Gauss-Seidel method did not converge after "
             + std::to_string(K_max) + " iterations "
-            + "(res=" + std::to_string(res) + ", tol= " + std::to_string(tol) + "): x = {}", x
+            + "(res=" + std::to_string(res_norm) + ", tol= " + std::to_string(tol) + "): "
+            + "x = {}", x
         );
     }
 }
