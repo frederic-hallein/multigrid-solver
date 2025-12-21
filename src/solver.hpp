@@ -29,7 +29,8 @@ namespace solver {
         std::vector<double>& x,
         const std::vector<double>& b,
         int K_max,
-        double tol = 1e-6
+        double tol = 1e-6,
+        double omega = 1.0
     );
 
     void gauss_seidel(
@@ -37,6 +38,7 @@ namespace solver {
         std::vector<double>& x,
         const std::vector<double>& b,
         int K_max,
-        double tol = 1e-6
+        double tol = 1e-6,
+        double omega = 1.0
     );
 }

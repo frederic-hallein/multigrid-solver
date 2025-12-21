@@ -5,6 +5,7 @@
 #include "logger.hpp"
 #include "solver.hpp"
 
+// TODO : add function for calculating spectral radius
 namespace solver {
     bool validate_dimensions(
         const std::vector<std::vector<double>>& A,
@@ -54,7 +55,8 @@ namespace solver {
         std::vector<double>& x,
         const std::vector<double>& b,
         int K_max,
-        double tol
+        double tol,
+        double omega
     )
     {
         if (!validate_dimensions(A, x, b)) {
@@ -74,16 +76,18 @@ namespace solver {
             #pragma omp parallel for
             for (size_t j = 0; j < n; ++j) {
                 double sum = std::inner_product(A[j].begin(), A[j].end(), x.begin(), 0.0) - A[j][j] * x[j];
-                y[j] = (1.0 / A[j][j]) * (b[j] - sum);
+                y[j] = (1.0 - omega) * x[j] + omega * (1.0 / A[j][j]) * (b[j] - sum);
             }
 
             res_norm = L2(residual(A, y, b));
             if (res_norm < tol) {
-                logger::info(
-                    "Jacobi method converged in "
-                    + std::to_string(k) + " iterations "
-                    + "(res=" + std::to_string(res_norm) + ", tol= " + std::to_string(tol) + "): "
-                    + "x = {}", x
+            logger::info(
+                "Jacobi method converged in "
+                + std::to_string(k) + " iterations "
+                + "(res_norm=" + std::to_string(res_norm)
+                + ", tol=" + std::to_string(tol)
+                + ", omega=" + std::to_string(omega)
+                + "): x = {}", x
                 );
                 x = y;
                 return;
@@ -95,17 +99,21 @@ namespace solver {
         logger::error(
             "Jacobi method did not converge after "
             + std::to_string(K_max) + " iterations "
-            + "(res=" + std::to_string(res_norm) + ", tol= " + std::to_string(tol) + "): "
-            + "x = {}", x
+            + "(res_norm=" + std::to_string(res_norm)
+            + ", tol=" + std::to_string(tol)
+            + ", omega=" + std::to_string(omega)
+            + "): x = {}", x
         );
     }
 
+    // TODO : implement red-black GS
     void gauss_seidel(
         const std::vector<std::vector<double>>& A,
         std::vector<double>& x,
         const std::vector<double>& b,
         int K_max,
-        double tol
+        double tol,
+        double omega
     )
     {
         if (!validate_dimensions(A, x, b)) {
@@ -122,7 +130,7 @@ namespace solver {
         for (int k = 1; k <= K_max; ++k) {
             for (size_t j = 0; j < x.size(); ++j) {
                 double sum = std::inner_product(A[j].begin(), A[j].end(), x.begin(), 0.0) - A[j][j] * x[j];
-                x[j] = (1.0 / A[j][j]) * (b[j] - sum);
+                x[j] = (1 - omega) * x[j] + omega * (1.0 / A[j][j]) * (b[j] - sum);
             }
 
             res_norm = L2(residual(A, x, b));
@@ -130,8 +138,10 @@ namespace solver {
                 logger::info(
                     "Gauss-Seidel method converged in "
                     + std::to_string(k) + " iterations "
-                    + "(res=" + std::to_string(res_norm) + ", tol= " + std::to_string(tol) + "): "
-                    + "x = {}", x
+                    + "(res_norm=" + std::to_string(res_norm)
+                    + ", tol=" + std::to_string(tol)
+                    + ", omega=" + std::to_string(omega)
+                    + "): x = {}", x
                 );
                 return;
             }
@@ -140,8 +150,10 @@ namespace solver {
         logger::error(
             "Gauss-Seidel method did not converge after "
             + std::to_string(K_max) + " iterations "
-            + "(res=" + std::to_string(res_norm) + ", tol= " + std::to_string(tol) + "): "
-            + "x = {}", x
+            + "(res_norm=" + std::to_string(res_norm)
+            + ", tol=" + std::to_string(tol)
+            + ", omega=" + std::to_string(omega)
+            + "): x = {}", x
         );
     }
 }
