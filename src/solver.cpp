@@ -20,13 +20,16 @@ namespace solver {
         return true;
     }
 
-    // TODO : define other norms and call specific norm based on parameter choice
-    // See Ch2 p. 16: Matrix Norms
-    bool is_converged(
+    double L2(const std::vector<double>& v) {
+        return std::sqrt(std::inner_product(v.begin(), v.end(), v.begin(), 0.0));
+    }
+
+    // TODO : define other norms and pass functions pointers to parameter
+    // (See Ch2 p. 16: Matrix Norms)
+    double residual_norm(
         const std::vector<std::vector<double>>& A,
         const std::vector<double>& x,
-        const std::vector<double>& b,
-        double tol
+        const std::vector<double>& b
     )
     {
         std::vector<double> r(b.size());
@@ -37,9 +40,17 @@ namespace solver {
             }
             r[i] = b[i] - Ax;
         }
+        return L2(r);
+    }
 
-        double norm = std::sqrt(std::inner_product(r.begin(), r.end(), r.begin(), 0.0));
-        return norm < tol;
+    bool is_converged(
+        const std::vector<std::vector<double>>& A,
+        const std::vector<double>& x,
+        const std::vector<double>& b,
+        double tol
+    )
+    {
+        return residual_norm(A, x, b) < tol;
     }
 
     void jacobi(
@@ -54,17 +65,20 @@ namespace solver {
 
         size_t n = x.size();
         std::vector<double> y(n);
+        double res = 0.0;
         for (int k = 1; k <= K_max; ++k) {
             for (size_t j = 0; j < n; ++j) {
                 double sum = std::inner_product(A[j].begin(), A[j].end(), x.begin(), 0.0) - A[j][j] * x[j];
                 y[j] = (1.0 / A[j][j]) * (b[j] - sum);
             }
 
-            if (is_converged(A, y, b, tol)) {
+            res = residual_norm(A, y, b);
+            if (res < tol) {
                 logger::info(
                     "Jacobi method converged in "
-                    + std::to_string(k)
-                    + " iterations: x = {}", y
+                    + std::to_string(k) + " iterations "
+                    + "(res=" + std::to_string(res) + ", tol= " + std::to_string(tol) + "): "
+                    + "x = {}", x
                 );
                 x = y;
                 return;
@@ -75,8 +89,8 @@ namespace solver {
 
         logger::error(
             "Jacobi method did not converge after "
-            + std::to_string(K_max)
-            + " iterations (tol=" + std::to_string(tol) + "): x = {}", x
+            + std::to_string(K_max) + " iterations "
+            + "(res=" + std::to_string(res) + ", tol= " + std::to_string(tol) + "): x = {}", x
         );
     }
 
@@ -88,19 +102,22 @@ namespace solver {
         double tol
     )
     {
-        if (!check_dimensions(A, x, b, "Jacobi")) return;
+        if (!check_dimensions(A, x, b, "Gauss-Seidel")) return;
 
+        double res = 0.0;
         for (int k = 1; k <= K_max; ++k) {
             for (size_t j = 0; j < x.size(); ++j) {
                 double sum = std::inner_product(A[j].begin(), A[j].end(), x.begin(), 0.0) - A[j][j] * x[j];
                 x[j] = (1.0 / A[j][j]) * (b[j] - sum);
             }
 
-            if (is_converged(A, x, b, tol)) {
+            res = residual_norm(A, x, b);
+            if (res < tol) {
                 logger::info(
                     "Gauss-Seidel method converged in "
-                    + std::to_string(k)
-                    + " iterations: x = {}", x
+                    + std::to_string(k) + " iterations "
+                    + "(res=" + std::to_string(res) + ", tol= " + std::to_string(tol) + "): "
+                    + "x = {}", x
                 );
                 return;
             }
@@ -108,8 +125,8 @@ namespace solver {
 
         logger::error(
             "Gauss-Seidel method did not converge after "
-            + std::to_string(K_max)
-            + " iterations (tol=" + std::to_string(tol) + "): x = {}", x
+            + std::to_string(K_max) + " iterations "
+            + "(res=" + std::to_string(res) + ", tol= " + std::to_string(tol) + "): x = {}", x
         );
     }
 }
