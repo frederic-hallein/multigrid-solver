@@ -5,7 +5,6 @@
 #include "logger.hpp"
 #include "solver.hpp"
 
-// TODO : add function for calculating spectral radius
 namespace solver {
     bool validate_dimensions(
         const std::vector<std::vector<double>>& A,
@@ -17,8 +16,6 @@ namespace solver {
         return (A.size() == n && b.size() == n);
     }
 
-    // TODO : define other norms
-    // (See Ch2 p. 16: Matrix Norms)
     double L2(const std::vector<double>& v) {
         return std::sqrt(std::inner_product(v.begin(), v.end(), v.begin(), 0.0));
     }

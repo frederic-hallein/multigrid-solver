@@ -28,7 +28,7 @@ namespace solver {
         const std::vector<std::vector<double>>& A,
         std::vector<double>& x,
         const std::vector<double>& b,
-        int K_max,
+        int K_max, // TODO : add const unsigned
         double tol = 1e-6,
         double omega = 1.0
     );
@@ -37,7 +37,7 @@ namespace solver {
         const std::vector<std::vector<double>>& A,
         std::vector<double>& x,
         const std::vector<double>& b,
-        int K_max,
+        int K_max, // TODO : add const unsigned
         double tol = 1e-6,
         double omega = 1.0
     );
