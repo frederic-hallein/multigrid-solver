@@ -3,11 +3,11 @@
 
 MG::MG(
     Func1D rhs_func_1d,
-    BoundaryCond boundary,
+    BoundaryCond1D boundary_1d,
     double x_min, double x_max,
     double alpha
 )
-    : rhs_func_1d(rhs_func_1d), boundary_(boundary),
+    : rhs_func_1d(rhs_func_1d), boundary_1d_(boundary_1d),
       x_min_(x_min), x_max_(x_max),
       y_min_(0.0), y_max_(0.0),
       alpha_(alpha)
@@ -17,12 +17,12 @@ MG::MG(
 
 MG::MG(
     Func2D rhs_func_2d,
-    BoundaryCond boundary,
+    BoundaryCond2D boundary_2d,
     double x_min, double x_max,
     double y_min, double y_max,
     double alpha
 )
-    : rhs_func_2d(rhs_func_2d), boundary_(boundary),
+    : rhs_func_2d(rhs_func_2d), boundary_2d_(boundary_2d),
       x_min_(x_min), x_max_(x_max),
       y_min_(y_min), y_max_(y_max),
       alpha_(alpha)
@@ -44,7 +44,7 @@ void MG::run(
         return;
     }
 
-    // TODO : do other checks before ding anything
+    // TODO : do other checks before doing anything
 
     initialize_grids_1d(n, u_guess);
 
@@ -62,46 +62,61 @@ void MG::run(
     Func2D u_guess
 )
 {
-    double h = (x_max_ - x_min_) / (n - 1); // grid spacing
-    // TODO : print out parameters used
-
-
-    std::vector<double> v((n+1)*(n+1), 0.0);
-    std::vector<double> f((n+1)*(n+1), 0.0);
-
-    for (unsigned int i = 0; i <= n; ++i) {
-        double x = x_min_ + i * h;
-        for (unsigned int j = 0; j <= n; ++j) {
-            double y = y_min_ + j * h;
-            int idx = flatten_2d_index(i, j, n+1);
-            v[idx] = u_guess(x, y);
-            f[idx] = rhs_func_2d(x, y);
-        }
+    if (n % 2 != 0) {
+        // TODO : print error
+        return;
     }
 
-    Grid grid{v, f};
+    // TODO : do other checks before doing anything
+
+    initialize_grids_2d(n, u_guess);
 
     set_smoother(smoother_type);
 
     // TODO: select correct cycle using switch
 }
 
-void MG::initialize_grids_1d(unsigned int n, Func1D u_guess) {
-    double h = (x_max_ - x_min_) / (n - 1);
+void MG::initialize_grids_1d(unsigned int coarse_level, Func1D u_guess) {
     grids_.clear();
-    unsigned int coarse_level = n;
     bool is_finest = true;
-
     while (coarse_level >= 2) {
-        double h_level = (x_max_ - x_min_) / coarse_level;
+        double h_level = (x_max_ - x_min_) / (coarse_level - 1);
         std::vector<double> v(coarse_level + 1, 0.0);
         std::vector<double> f(coarse_level + 1, 0.0);
 
         if (is_finest) {
-            for (unsigned int i = 0; i <= coarse_level; ++i) {
+            for (unsigned int i = 0; i < coarse_level; ++i) {
                 double x = x_min_ + i * h_level;
                 v[i] = u_guess(x);
                 f[i] = rhs_func_1d(x);
+            }
+            is_finest = false;
+        }
+
+        grids_.emplace_back(Grid{v, f});
+
+        if (coarse_level == 2) break;
+        coarse_level /= 2;
+    }
+}
+
+void MG::initialize_grids_2d(unsigned int coarse_level, Func2D u_guess) {
+    grids_.clear();
+    bool is_finest = true;
+    while (coarse_level >= 2) {
+        double h_level = (x_max_ - x_min_) / (coarse_level - 1);
+        std::vector<double> v((coarse_level + 1) * (coarse_level + 1), 0.0);
+        std::vector<double> f((coarse_level + 1) * (coarse_level + 1), 0.0);
+
+        if (is_finest) {
+            for (unsigned int i = 0; i < coarse_level; ++i) {
+                double x = x_min_ + i * h_level;
+                for (unsigned int j = 0; j < coarse_level; ++j) {
+                    double y = y_min_ + j * h_level;
+                    int idx = flatten_2d_index(i, j, coarse_level);
+                    v[idx] = u_guess(x, y);
+                    f[idx] = rhs_func_2d(x, y);
+                }
             }
             is_finest = false;
         }
