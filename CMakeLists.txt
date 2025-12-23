@@ -23,15 +23,20 @@ add_subdirectory(external/googletest)
 # Test files (all .cpp files in tests/)
 file(GLOB TEST_FILES tests/*.cpp)
 
-# Test executable (does NOT include main.cpp)
-add_executable(test_solver ${TEST_FILES} ${SRC_FILES})
-target_include_directories(test_solver PRIVATE src)
-target_link_libraries(test_solver gtest gtest_main pthread)
+# For each test file, create a separate executable and register with CTest
+foreach(test_src ${TEST_FILES})
+    # Get the filename without directory or extension
+    get_filename_component(test_name ${test_src} NAME_WE)
+    set(test_exe ${test_name})
 
-# Place test executable in build/test/
-set_target_properties(test_solver PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)
+    add_executable(${test_exe} ${test_src} ${SRC_FILES})
+    target_include_directories(${test_exe} PRIVATE src)
+    target_link_libraries(${test_exe} gtest gtest_main pthread)
+    set_target_properties(${test_exe} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test)
+
+    add_test(NAME ${test_exe} COMMAND ${test_exe})
+endforeach()
 
 # --------------------------------------------------
-# Enable CTest and register the test executable
+# Enable CTest
 enable_testing()
-add_test(NAME test_solver COMMAND test_solver)

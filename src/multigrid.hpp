@@ -50,6 +50,8 @@ public:
         Func2D u_guess
     );
 
+    friend class multigrid_initialize_grids_1d_Test;
+
 private:
     Func1D rhs_func_1d;
     Func2D rhs_func_2d;

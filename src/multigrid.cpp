@@ -92,7 +92,7 @@ void MG::initialize_grids_1d(unsigned int n, Func1D u_guess) {
     unsigned int coarse_level = n;
     bool is_finest = true;
 
-    while (coarse_level > 2) {
+    while (coarse_level >= 2) {
         double h_level = (x_max_ - x_min_) / coarse_level;
         std::vector<double> v(coarse_level + 1, 0.0);
         std::vector<double> f(coarse_level + 1, 0.0);
