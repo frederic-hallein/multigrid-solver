@@ -34,6 +34,18 @@ namespace logger {
         std::cout << "[" << current_time() << "] [INFO] " << msg << '\n';
     }
 
+    template <typename T, typename... Args>
+    inline void info(const std::string& msg, const T& value, const Args&... args) {
+        size_t pos = msg.find("{}");
+        if (pos != std::string::npos) {
+            std::string formatted = msg;
+            formatted.replace(pos, 2, std::to_string(value));
+            info(formatted, args...);
+        } else {
+            std::cout << "[" << current_time() << "] [INFO] " << msg << '\n';
+        }
+    }
+
     template <typename T>
     inline void info(const std::string& msg, const std::vector<T>& vec) {
         size_t pos = msg.find("{}");
@@ -46,8 +58,21 @@ namespace logger {
         }
     }
 
+
     inline void warning(const std::string& msg) {
         std::cout << "[" << current_time() << "] [WARNING] " << msg << '\n';
+    }
+
+    template <typename T>
+    inline void warning(const std::string& msg, const T& value) {
+        size_t pos = msg.find("{}");
+        if (pos != std::string::npos) {
+            std::string formatted = msg;
+            formatted.replace(pos, 2, std::to_string(value));
+            std::cout << "[" << current_time() << "] [WARNING] " << formatted << '\n';
+        } else {
+            std::cout << "[" << current_time() << "] [WARNING] " << msg << '\n';
+        }
     }
 
     template <typename T>
@@ -62,8 +87,21 @@ namespace logger {
         }
     }
 
+
     inline void error(const std::string& msg) {
         std::cout << "[" << current_time() << "] [ERROR] " << msg << '\n';
+    }
+
+    template <typename T>
+    inline void error(const std::string& msg, const T& value) {
+        size_t pos = msg.find("{}");
+        if (pos != std::string::npos) {
+            std::string formatted = msg;
+            formatted.replace(pos, 2, std::to_string(value));
+            std::cout << "[" << current_time() << "] [ERROR] " << formatted << '\n';
+        } else {
+            std::cout << "[" << current_time() << "] [ERROR] " << msg << '\n';
+        }
     }
 
     template <typename T>
