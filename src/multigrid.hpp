@@ -1,7 +1,10 @@
 #pragma once
 #include <vector>
 #include <functional>
+
+#include "common.hpp"
 #include "smoother.hpp"
+#include "logger.hpp"
 
 using Func1D = std::function<double(double)>;
 using Func2D = std::function<double(double, double)>;
@@ -62,14 +65,14 @@ private:
     double x_min_, x_max_, y_min_, y_max_;
     double alpha_;
     std::function<void(std::vector<double>&, const std::vector<double>&, double, unsigned int, int)> smooth_;
-    std::vector<Grid> grids_;
+    std::vector<Grid> grids_; // TODO : maybe use heap instead?
 
     void initialize_grids_1d(
-        unsigned int coarse_level,
+        unsigned int sub_int,
         Func1D u_guess
     );
     void initialize_grids_2d(
-        unsigned int coarse_level,
+        unsigned int sub_int,
         Func2D u_guess
     );
     void set_smoother(smoother::SmootherType smoother_type);

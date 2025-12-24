@@ -23,7 +23,7 @@ double zero_boundary(double x, double y) {
 }
 
 int main() {
-    unsigned int n = 16; // # grid points
+    unsigned int sub_int = 16; // # sub intervals
     double x_min = 0.0, x_max = 1.0;
     double y_min = 0.0, y_max = 1.0;
     unsigned int nu_1 = 2;
@@ -31,7 +31,7 @@ int main() {
     double alpha = 0.0;
 
     MG mg(f, zero_boundary, x_min, x_max, y_min, y_max, alpha);
-    mg.run(n, smoother::SmootherType::RBGS, CycleType::V, nu_1, nu_2, u_guess);
+    mg.run(sub_int, smoother::SmootherType::RBGS, CycleType::V, nu_1, nu_2, u_guess);
 
 
     return 0;

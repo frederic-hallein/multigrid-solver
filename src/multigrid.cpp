@@ -31,7 +31,7 @@ MG::MG(
 }
 
 void MG::run(
-    unsigned int n,
+    unsigned int sub_int,
     smoother::SmootherType smoother_type,
     CycleType cycle_type,
     unsigned int nu_1,
@@ -39,14 +39,14 @@ void MG::run(
     Func1D u_guess
 )
 {
-    if (n % 2 != 0) {
+    if (sub_int % 2 != 0) {
         // TODO : print error
         return;
     }
 
     // TODO : do other checks before doing anything
 
-    initialize_grids_1d(n, u_guess);
+    initialize_grids_1d(sub_int, u_guess);
 
     set_smoother(smoother_type);
 
@@ -54,7 +54,7 @@ void MG::run(
 }
 
 void MG::run(
-    unsigned int n,
+    unsigned int sub_int,
     smoother::SmootherType smoother_type,
     CycleType cycle_type,
     unsigned int nu_1,
@@ -62,30 +62,34 @@ void MG::run(
     Func2D u_guess
 )
 {
-    if (n % 2 != 0) {
+    if (sub_int % 2 != 0) {
         // TODO : print error
         return;
     }
 
     // TODO : do other checks before doing anything
 
-    initialize_grids_2d(n, u_guess);
+    initialize_grids_2d(sub_int, u_guess);
 
     set_smoother(smoother_type);
 
     // TODO: select correct cycle using switch
+    std::vector<double> v = v_cycle(nu_1, nu_2);
 }
 
-void MG::initialize_grids_1d(unsigned int coarse_level, Func1D u_guess) {
+void MG::initialize_grids_1d(unsigned int sub_int, Func1D u_guess) {
+    logger::info("Initializing grids for 1D problem.");
     grids_.clear();
     bool is_finest = true;
-    while (coarse_level >= 2) {
-        double h_level = (x_max_ - x_min_) / (coarse_level - 1);
-        std::vector<double> v(coarse_level + 1, 0.0);
-        std::vector<double> f(coarse_level + 1, 0.0);
+    unsigned int sub_int_current_grid = sub_int;
+    while (sub_int_current_grid >= 2) {
+        unsigned int n = sub_int_current_grid + 1;
+        double h_level = (x_max_ - x_min_) / sub_int_current_grid;
+        std::vector<double> v(n, 0.0);
+        std::vector<double> f(n, 0.0);
 
         if (is_finest) {
-            for (unsigned int i = 0; i < coarse_level; ++i) {
+            for (unsigned int i = 0; i < n; ++i) {
                 double x = x_min_ + i * h_level;
                 v[i] = u_guess(x);
                 f[i] = rhs_func_1d(x);
@@ -95,25 +99,33 @@ void MG::initialize_grids_1d(unsigned int coarse_level, Func1D u_guess) {
 
         grids_.emplace_back(Grid{v, f});
 
-        if (coarse_level == 2) break;
-        coarse_level /= 2;
+        logger::info(
+            "Created grid (level {}): v.size() = {}, f.size() = {}",
+            grids_.size() - 1, v.size(), f.size()
+        );
+
+        if (n == 3) break;
+        sub_int_current_grid /= 2;
     }
 }
 
-void MG::initialize_grids_2d(unsigned int coarse_level, Func2D u_guess) {
+void MG::initialize_grids_2d(unsigned int sub_int, Func2D u_guess) {
+    logger::info("Initializing grids for 2D problem.");
     grids_.clear();
     bool is_finest = true;
-    while (coarse_level >= 2) {
-        double h_level = (x_max_ - x_min_) / (coarse_level - 1);
-        std::vector<double> v((coarse_level + 1) * (coarse_level + 1), 0.0);
-        std::vector<double> f((coarse_level + 1) * (coarse_level + 1), 0.0);
+    unsigned int sub_int_current_grid = sub_int;
+    while (sub_int_current_grid >= 2) {
+        unsigned int n = sub_int_current_grid + 1;
+        double h_level = (x_max_ - x_min_) / sub_int_current_grid;
+        std::vector<double> v(n * n, 0.0);
+        std::vector<double> f(n * n, 0.0);
 
         if (is_finest) {
-            for (unsigned int i = 0; i < coarse_level; ++i) {
+            for (unsigned int i = 0; i < n; ++i) {
                 double x = x_min_ + i * h_level;
-                for (unsigned int j = 0; j < coarse_level; ++j) {
+                for (unsigned int j = 0; j < n; ++j) {
                     double y = y_min_ + j * h_level;
-                    int idx = flatten_2d_index(i, j, coarse_level);
+                    int idx = flatten_2d_index(i, j, n);
                     v[idx] = u_guess(x, y);
                     f[idx] = rhs_func_2d(x, y);
                 }
@@ -123,8 +135,13 @@ void MG::initialize_grids_2d(unsigned int coarse_level, Func2D u_guess) {
 
         grids_.emplace_back(Grid{v, f});
 
-        if (coarse_level == 2) break;
-        coarse_level /= 2;
+        logger::info(
+            "Created grid (level {}): v.size() = {}, f.size() = {}",
+            grids_.size() - 1, v.size(), f.size()
+        );
+
+        if (n == 3) break;
+        sub_int_current_grid /= 2;
     }
 }
 
@@ -146,7 +163,24 @@ void MG::set_smoother(smoother::SmootherType smoother_type) {
 }
 
 std::vector<double> MG::v_cycle(unsigned int nu_1, unsigned int nu_2) {
+
+    // pre-smoothing
     for (unsigned int iter = 0; iter < nu_1; ++iter) {
+
+    }
+
+    // residual computation
+
+    // restriction
+
+    // recursion condition
+
+    // prolongation
+
+    // correction
+
+    // post-smoothing
+    for (unsigned int iter = 0; iter < nu_2; ++iter) {
 
     }
 
