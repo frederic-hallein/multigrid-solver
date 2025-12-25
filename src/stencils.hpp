@@ -2,28 +2,28 @@
 
 namespace stencils {
     inline double helmholtz_1d(
-        double v_x_minus, double v_x_plus,
-        double f, double h, double alpha)
+        double v_x_min, double v_x_max,
+        double f, double h, double sigma)
     {
-        return (v_x_minus + v_x_plus - h*h * f) / (2.0 + alpha * h*h);
+        return (v_x_min + v_x_max - h*h * f) / (2.0 + sigma * h*h);
     }
 
     inline double helmholtz_2d(
-        double v_x_minus, double v_x_plus,
-        double v_y_minus, double v_y_plus,
-        double f, double h, double alpha
+        double v_x_min, double v_x_max,
+        double v_y_min, double v_y_max,
+        double f, double h, double sigma
     )
     {
-        return (v_x_minus + v_x_plus + v_y_minus + v_y_plus - h*h * f) / (4.0 + alpha * h*h);
+        return (v_x_min + v_x_max + v_y_min + v_y_max - h*h * f) / (4.0 + sigma * h*h);
     }
 
     inline double helmholtz_3d(
-        double v_x_minus, double v_x_plus,
-        double v_y_minus, double v_y_plus,
-        double v_z_minus, double v_z_plus,
-        double f, double h, double alpha
+        double v_x_min, double v_x_max,
+        double v_y_min, double v_y_max,
+        double v_z_min, double v_z_max,
+        double f, double h, double sigma
     )
     {
-        return (v_x_minus + v_x_plus + v_y_minus + v_y_plus + v_z_minus + v_z_plus - h*h * f) / (6.0 + alpha * h*h);
+        return (v_x_min + v_x_max + v_y_min + v_y_max + v_z_min + v_z_max - h*h * f) / (6.0 + sigma * h*h);
     }
 }

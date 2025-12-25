@@ -1,17 +1,17 @@
 #pragma once
-#include "alias.hpp"
+#include "type_alias.hpp"
 
 struct BoundaryCond1D {
-    Func1D x_min, x_max;
+    Func1D left, right;
 };
 
 struct BoundaryCond2D {
-    Func2D x_min, x_max;
-    Func2D y_min, y_max;
+    Func2D left, right;
+    Func2D down, up;
 };
 
-struct BoundaryCond2D {
-    Func2D x_min, x_max;
-    Func2D y_min, y_max;
-    Func2D z_min, z_max;
+struct BoundaryCond3D {
+    Func2D left, right;
+    Func2D down, up;
+    Func2D forw, back;
 };

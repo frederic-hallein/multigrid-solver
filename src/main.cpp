@@ -1,13 +1,7 @@
-#include <iostream>
-#include <functional>
 #include <cmath>
 
 #include "logger.hpp"
-#include "alias.hpp"
 #include "multigrid.hpp"
-#include "domain.hpp"
-#include "smoother.hpp"
-
 
 
 // double f(double x, double y) {
@@ -44,22 +38,20 @@ double zero_boundary(double x) {
 
 int main() {
     unsigned int sub_int = 16; // #subintervals -> n + 1 grid points
-    Domain1D domain{ 0.0, 1.0 };
+    Domain1D dom{ 0.0, 1.0 };
     BoundaryCond1D bc{ zero_boundary, zero_boundary };
     SmootherParam smoother_param{ 2, 1 };
-    double alpha = 0.0;
+    double sigma = 0.0;
 
     // TODO : just stick to procedural programming and 1D for now
-    multigrid::run_helmholtz_1d(
+    multigrid::run_helmholtz_cartesian_1d(
         f,
         bc,
-        alpha,
-        domain,
+        sigma,
+        dom,
         sub_int,
         u_guess,
-        smoother_param,
-        smoother_1d::jacobi,
-        cycle::v_cycle
+        smoother_param
     );
 
 
