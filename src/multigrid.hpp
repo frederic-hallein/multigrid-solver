@@ -1,83 +1,33 @@
 #pragma once
-#include <vector>
-#include <functional>
 
-#include "common.hpp"
+#include "alias.hpp"
+#include "boundary_condition.hpp"
+#include "domain.hpp"
 #include "smoother.hpp"
-#include "logger.hpp"
+#include "cycle.hpp"
 
-using Func1D = std::function<double(double)>;
-using Func2D = std::function<double(double, double)>;
-using BoundaryCond1D = std::function<double(double)>;
-using BoundaryCond2D = std::function<double(double, double)>;
-
-enum class CycleType { V, W, F };
-// TODO : add enum for type of BC
-
-struct Grid {
-    std::vector<double> v;
-    std::vector<double> f;
-};
-
-class MG {
-public:
-    MG(
-        Func1D rhs_func_1d,
-        BoundaryCond1D boundary,
-        double x_min, double x_max,
-        double alpha
-    );
-
-    MG(
-        Func2D rhs_func_2d,
-        BoundaryCond2D boundary,
-        double x_min, double x_max,
-        double y_min, double y_max,
-        double alpha
-    );
-
-    void run(
-        unsigned int n,
-        smoother::SmootherType smoother_type,
-        CycleType cycle_type,
-        unsigned int nu_1,
-        unsigned int nu_2,
-        Func1D u_guess
-    );
-
-    void run(
-        unsigned int n,
-        smoother::SmootherType smoother_type,
-        CycleType cycle_type,
-        unsigned int nu_1,
-        unsigned int nu_2,
-        Func2D u_guess
-    );
-
-    friend class multigrid_initialize_grids_1d_Test;
-    friend class multigrid_initialize_grids_2d_Test;
-
-private:
-    Func1D rhs_func_1d;
-    Func2D rhs_func_2d;
-    BoundaryCond1D boundary_1d_;
-    BoundaryCond2D boundary_2d_;
-    double x_min_, x_max_, y_min_, y_max_;
-    double alpha_;
-    std::function<void(std::vector<double>&, const std::vector<double>&, double, unsigned int, int)> smooth_;
-    std::vector<Grid> grids_; // TODO : maybe use heap instead?
-
-    void initialize_grids_1d(
+namespace multigrid {
+    std::vector<double> run_helmholtz_1d(
+        Func1D rhs_f,
+        BoundaryCond1D bc,
+        double alpha, // (>= 0)
+        Domain1D domain,
         unsigned int sub_int,
-        Func1D u_guess
+        Func1D u_guess = [](double) { return 0.0; },
+        SmootherParam smoother_param = SmootherParam(),
+        Smoother smoother = smoother_1d::jacobi,
+        Cycle cycle = cycle::v_cycle
     );
-    void initialize_grids_2d(
+
+    std::vector<double> run_helmholtz_2d(
+        Func2D rhs_f,
+        BoundaryCond2D bc,
+        double alpha, // (>= 0)
+        Domain2D domain,
         unsigned int sub_int,
-        Func2D u_guess
+        Func2D u_guess = [](double, double) { return 0.0; },
+        SmootherParam smoother_param = SmootherParam(),
+        Smoother smoother = smoother_2d::jacobi,
+        Cycle cycle = cycle::v_cycle
     );
-    void set_smoother(smoother::SmootherType smoother_type);
-    std::vector<double> v_cycle(
-        unsigned int nu_1,
-        unsigned int nu_2
-    );
-};
+}
