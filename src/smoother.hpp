@@ -3,7 +3,8 @@
 #include <cstddef>
 #include <vector>
 
-#include "stencils.hpp"
+#include "grid.hpp"
+#include "stencil.hpp"
 
 namespace smoother_1d {
     void jacobi(
@@ -11,53 +12,47 @@ namespace smoother_1d {
         const std::vector<double>& f,
         double h,
         double sigma,
-        double omega = 1.0,
-        unsigned int num_sweeps = 1
+        double omega
     );
 
-    void gauss_seidel(
-        std::vector<double>& v,
-        const std::vector<double>& f,
-        double h,
-        double sigma,
-        double omega = 1.0,
-        unsigned int num_sweeps = 1
-    );
+    // void gauss_seidel(
+    //     std::vector<double>& v,
+    //     const std::vector<double>& f,
+    //     double h,
+    //     double sigma,
+    //     double omega = 1.0
+    // );
 
-    void red_black_gauss_seidel(
-        std::vector<double>& v,
-        const std::vector<double>& f,
-        double h,
-        double sigma,
-        double omega = 1.0,
-        unsigned int num_sweeps = 1
-    );
+    // void red_black_gauss_seidel(
+    //     std::vector<double>& v,
+    //     const std::vector<double>& f,
+    //     double h,
+    //     double sigma,
+    //     double omega = 1.0
+    // );
 }
 namespace smoother_2d {
-    void jacobi(
-        std::vector<double>& v,
-        const std::vector<double>& f,
-        double h,
-        double sigma,
-        double omega = 1.0,
-        unsigned int num_sweeps = 1
-    );
+    // void jacobi(
+    //     std::vector<double>& v,
+    //     const std::vector<double>& f,
+    //     double h,
+    //     double sigma,
+    //     double omega = 1.0
+    // );
 
-    void gauss_seidel(
-        std::vector<double>& v,
-        const std::vector<double>& f,
-        double h,
-        double sigma,
-        double omega = 1.0,
-        unsigned int num_sweeps = 1
-    );
+    // void gauss_seidel(
+    //     std::vector<double>& v,
+    //     const std::vector<double>& f,
+    //     double h,
+    //     double sigma,
+    //     double omega = 1.0
+    // );
 
-    void red_black_gauss_seidel(
-        std::vector<double>& v,
-        const std::vector<double>& f,
-        double h,
-        double sigma,
-        double omega = 1.0,
-        unsigned int num_sweeps = 1
-    );
+    // void red_black_gauss_seidel(
+    //     std::vector<double>& v,
+    //     const std::vector<double>& f,
+    //     double h,
+    //     double sigma,
+    //     double omega = 1.0
+    // );
 }

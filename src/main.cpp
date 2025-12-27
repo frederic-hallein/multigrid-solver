@@ -25,7 +25,7 @@ double f(double x) {
 }
 
 double u_exact(double x) {
-    return std::sin(M_PI * x);
+    return sin(M_PI * x);
 }
 
 double u_guess(double x) {
@@ -40,11 +40,11 @@ int main() {
     unsigned int sub_int = 16; // #subintervals -> n + 1 grid points
     Domain1D dom{ 0.0, 1.0 };
     BoundaryCond1D bc{ zero_boundary, zero_boundary };
-    SmootherParam smoother_param{ 2, 1 };
+    SmootherParam smoother_param{ 3, 3 };
     double sigma = 0.0;
 
-    // TODO : just stick to procedural programming and 1D for now
-    multigrid::run_helmholtz_cartesian_1d(
+    // TODO : return struct object containing all info from MG instead of only solution u
+    std::vector<double> u = multigrid::run_helmholtz_cartesian_1d(
         f,
         bc,
         sigma,
@@ -54,6 +54,7 @@ int main() {
         smoother_param
     );
 
+    logger::info("u = {}", u);
 
 
     return 0;

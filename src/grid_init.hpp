@@ -2,13 +2,9 @@
 
 #include "type_alias.hpp"
 #include "logger.hpp"
+#include "grid.hpp"
 #include "domain.hpp"
 #include "boundary_condition.hpp"
-
-struct Grid {
-    std::vector<double> v;
-    std::vector<double> f;
-};
 
 std::vector<Grid> initialize_grids(
     Func1D rhs_func,

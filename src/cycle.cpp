@@ -1,45 +1,51 @@
 #include "cycle.hpp"
 
 namespace cycle {
-    std::vector<double> v_cycle(
-        std::vector<double>& v,
-        const std::vector<double>& f,
+    void v_cycle(
+        std::vector<Grid>& grids,
+        size_t level,
         double h,
+        double sigma,
+        double omega,
+        const Smoother& smoother,
         const SmootherParam& smoother_param
     )
     {
-        // pre-smoothing
+        logger::info("Running V-Cycle (level = {})", level);
+        auto& grid = grids[level];
+
         for (unsigned int iter = 1; iter <= smoother_param.nu_1; ++iter) {
-            // TODO
+            logger::info("Pre-smoothing ({}/{})", iter, smoother_param.nu_1);
+            smoother(grid.v, grid.f, h, sigma, omega);
         }
 
+        if (level == grids.size() - 1) {
+            logger::info("Reached coarsest grid. Directly solve for v.");
+            grid.v = multigrid_operations::direct_solve(grid.f, h);
+        } else {
+            logger::info("Coarsest grid not reached. Call V-Cycle recursively.");
+            std::vector<double> residual = multigrid_operations::compute_residual(grid.f, h);
+            grids[level + 1].f = multigrid_operations::restrict_residual(residual);
 
-        // post-smoothing
+            std::fill(grids[level + 1].v.begin(), grids[level + 1].v.end(), 0.0); // TODO : can be removed maybe
+
+            v_cycle(grids, level + 1, 2 * h, sigma, omega, smoother, smoother_param);
+
+            logger::info("Prolongating and correcting (level = {})", level);
+            std::vector<double> correction = multigrid_operations::prolongate(grids[level + 1].v);
+            for (size_t i = 0; i < grid.v.size(); ++i) {
+                grid.v[i] += correction[i];
+            }
+        }
+
         for (unsigned int iter = 1; iter <= smoother_param.nu_2; ++iter) {
-            // TODO
+            logger::info("Post-smoothing ({}/{})", iter, smoother_param.nu_2);
+            smoother(grid.v, grid.f, h, sigma, omega);
         }
 
-        return {};
+        logger::info("Stack unwinding (level = {})", level);
     }
 
-    std::vector<double> w_cycle(
-        std::vector<double>& v,
-        const std::vector<double>& f,
-        double h,
-        const SmootherParam& smoother_param
-    )
-    {
-        // pre-smoothing
-        for (unsigned int iter = 1; iter <= smoother_param.nu_1; ++iter) {
-            // TODO
-        }
-
-
-        // post-smoothing
-        for (unsigned int iter = 1; iter <= smoother_param.nu_2; ++iter) {
-            // TODO
-        }
-
-        return {};
-    }
+    // std::vector<double> w_cycle(
+    // }
 }
