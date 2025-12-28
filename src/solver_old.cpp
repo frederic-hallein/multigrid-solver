@@ -3,7 +3,7 @@
 #include <numeric>
 
 #include "logger.hpp"
-#include "solver.hpp"
+#include "solver_old.hpp"
 
 namespace solver {
     bool validate_dimensions(

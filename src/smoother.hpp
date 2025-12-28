@@ -1,10 +1,9 @@
 #pragma once
 
-#include <cstddef>
 #include <vector>
 
 #include "grid.hpp"
-#include "stencil.hpp"
+#include "FDM.hpp"
 
 namespace smoother_1d {
     void jacobi(

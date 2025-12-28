@@ -3,7 +3,7 @@
 namespace cycle {
     void v_cycle(
         std::vector<Grid>& grids,
-        size_t level,
+        std::size_t level,
         double h,
         double sigma,
         double omega,
@@ -21,10 +21,10 @@ namespace cycle {
 
         if (level == grids.size() - 1) {
             logger::info("Reached coarsest grid. Directly solve for v.");
-            grid.v = multigrid_operations::direct_solve(grid.f, h);
+            grid.v = multigrid_operations::direct_solve(grid.f, h, sigma);
         } else {
             logger::info("Coarsest grid not reached. Call V-Cycle recursively.");
-            std::vector<double> residual = multigrid_operations::compute_residual(grid.f, h);
+            std::vector<double> residual = multigrid_operations::compute_residual(grid.v, grid.f, h, sigma);
             grids[level + 1].f = multigrid_operations::restrict_residual(residual);
 
             std::fill(grids[level + 1].v.begin(), grids[level + 1].v.end(), 0.0); // TODO : can be removed maybe

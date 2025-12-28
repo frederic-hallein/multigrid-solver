@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../src/solver.hpp"
+#include "../src/solver_old.hpp"
 
 TEST(test_jacobi, solves_2x2_system) {
     std::vector<std::vector<double>> A = {

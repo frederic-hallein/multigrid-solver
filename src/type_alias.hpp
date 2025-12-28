@@ -19,7 +19,7 @@ using Smoother = std::function<void(
 )>;
 using Cycle = std::function<void(
     std::vector<Grid>&,
-    size_t,
+    std::size_t,
     double,
     double,
     double,
