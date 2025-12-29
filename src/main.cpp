@@ -37,7 +37,7 @@ double zero_boundary(double x) {
 }
 
 int main() {
-    unsigned int sub_int = 16; // #subintervals -> n + 1 grid points
+    unsigned int sub_int = 4; // #subintervals -> n + 1 grid points
     Domain1D dom{ 0.0, 1.0 };
     BoundaryCond1D bc{ zero_boundary, zero_boundary };
     SmootherParam smoother_param{ 3, 3 };

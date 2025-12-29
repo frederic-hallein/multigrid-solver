@@ -42,40 +42,66 @@ namespace multigrid_operations {
     )
     {
         std::size_t n = f.size();
-        std::vector<double> v(n, 0.0);
+        std::vector<double> x(n, 0.0);
 
-        double h_sq = h * h;
+        // build tridiagonal system matrix and RHS
+        std::vector<std::vector<double>> A(n, std::vector<double>(n, 0.0));
+        std::vector<double> b = f;
 
-        double a = -1.0 / h_sq;           // subdiagonal
-        double b =  2.0 / h_sq + sigma;   // diagonal
-        double c = -1.0 / h_sq;           // superdiagonal
+        // construct the discrete Helmholtz operator matrix
+        for (std::size_t i = 0; i < n; ++i) {
+            if (i == 0 || i == n - 1) {
+                // boundary conditions: Dirichlet (homogeneous)
+                A[i][i] = 1.0;
+                b[i] = 0.0;
+            } else {
+                // interior points: discrete Helmholtz stencil
+                double h_sq = h * h;
+                A[i][i-1] = -1.0 / h_sq;
+                A[i][i]   =  2.0 / h_sq + sigma;
+                A[i][i+1] = -1.0 / h_sq;
+            }
+        }
 
-        // Forward elimination
-        std::vector<double> c_prime(n);
-        std::vector<double> d_prime(n);
-
-        c_prime[0] = c / b;
-        d_prime[0] = f[0] / b;
-
-        for (std::size_t i = 1; i < n; ++i) {
-            double denom = b - a * c_prime[i - 1];
-            if (i < n - 1) {
-                c_prime[i] = c / denom;
+        // gaussian elimination with partial pivoting
+        for (std::size_t k = 0; k < n - 1; ++k) {
+            // find pivot
+            std::size_t pivot = k;
+            for (std::size_t i = k + 1; i < n; ++i) {
+                if (std::fabs(A[i][k]) > std::fabs(A[pivot][k])) {
+                    pivot = i;
+                }
             }
 
-            d_prime[i] = (f[i] - a * d_prime[i-1]) / denom;
+            // swap rows
+            if (pivot != k) {
+                std::swap(A[k], A[pivot]);
+                std::swap(b[k], b[pivot]);
+            }
+
+            // elimination
+            for (std::size_t i = k + 1; i < n; ++i) {
+                if (std::fabs(A[k][k]) < 1e-14) continue;
+                double factor = A[i][k] / A[k][k];
+                for (std::size_t j = k; j < n; ++j) {
+                    A[i][j] -= factor * A[k][j];
+                }
+                b[i] -= factor * b[k];
+            }
         }
 
-        // Back substitution
-        v[n-1] = d_prime[n-1];
-        for (int i = n - 2; i >= 0; --i) {
-            v[i] = d_prime[i] - c_prime[i] * v[i+1];
+        // back substitution
+        for (int i = n - 1; i >= 0; --i) {
+            x[i] = b[i];
+            for (std::size_t j = i + 1; j < n; ++j) {
+                x[i] -= A[i][j] * x[j];
+            }
+            if (std::abs(A[i][i]) > 1e-14) {
+                x[i] /= A[i][i];
+            }
         }
 
-        v[0] = 0.0;
-        v[n-1] = 0.0;
-
-        return v;
+        return x;
     }
 
     std::vector<double> prolongate(

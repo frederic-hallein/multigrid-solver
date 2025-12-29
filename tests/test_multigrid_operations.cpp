@@ -53,7 +53,35 @@ TEST(multigrid_operations, restrict_residual) {
 }
 
 TEST(multigrid_operations, direct_solve) {
-    // TODO
+    // Test with a simple constant RHS
+    std::vector<double> f = {0.0, 1.0, 1.0, 1.0, 0.0};
+    double h = 0.25;
+    double sigma = 1.0;
+
+    std::vector<double> x = multigrid_operations::direct_solve(f, h, sigma);
+
+    // Solution should be finite and satisfy boundary conditions
+    EXPECT_NEAR(x[0], 0.0, 1e-10);
+    EXPECT_NEAR(x[x.size() - 1], 0.0, 1e-10);
+
+    double h_sq = h * h;
+    for (std::size_t i = 1; i < x.size() - 1; ++i) {
+        double lhs = (-x[i-1] + 2*x[i] - x[i+1]) / h_sq + sigma * x[i];
+        EXPECT_NEAR(lhs, f[i], 1e-10);
+    }
+}
+
+TEST(DirectSolveTest, direct_solve_zero_rhs) {
+    // Test with zero RHS - solution should be zero everywhere
+    std::vector<double> f(5, 0.0);
+    double h = 0.25;
+    double sigma = 1.0;
+
+    std::vector<double> x = multigrid_operations::direct_solve(f, h, sigma);
+
+    for (std::size_t i = 0; i < x.size(); ++i) {
+        EXPECT_NEAR(x[i], 0.0, 1e-10);
+    }
 }
 
 TEST(multigrid_operations, prolongate) {
