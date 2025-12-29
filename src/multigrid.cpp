@@ -15,14 +15,14 @@ namespace multigrid {
     )
     {
         if (sub_int % 2 != 0) {
-            logger::info("Sub intervals are not a multiple of 2.");
+            logger::error("Sub intervals are not a multiple of 2.");
             return {};
         }
 
         std::vector<Grid> grids = initialize_grids(rhs_f, u_guess, dom, bc, sub_int);
 
         double h = (dom.x_max - dom.x_min) / sub_int;
-        cycle(grids, 0, h, sigma, omega, smoother, smoother_param);
+        cycle(grids, 0, h, sigma, omega, smoother, smoother_param); // TODO : add iterations to v-cycle
 
         return grids[0].v;
     }
