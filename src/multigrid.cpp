@@ -25,10 +25,12 @@ namespace multigrid {
 
         double h = (dom.x_max - dom.x_min) / sub_int;
         for (int iter = 0; iter < num_iterations; ++iter) {
-            cycle(grids, 0, h, sigma, omega, smoother, smoother_param);
+            cycle(grids, h, sigma, omega, smoother, smoother_param);
 
             auto r = multigrid_operations::compute_residual(grids[0].v, grids[0].f, h, sigma);
             double residual_norm = norm::L2(r);
+
+            logger::info("L2(r) = {} at iter = {}", residual_norm, iter);
             if (residual_norm < tolerance) {
                 logger::info("Converged at iteration step {}", iter);
                 return grids[0].v;

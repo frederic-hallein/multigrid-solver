@@ -19,11 +19,11 @@ namespace multigrid {
         Domain1D domain,
         unsigned int sub_int,
         unsigned int num_iterations,
-        double tolerance,
+        double tolerance = 1e-10,
         Func1D u_guess = [](double) { return 0.0; },
         const SmootherParam& smoother_param = SmootherParam(),
         const Smoother& smoother = smoother_1d::jacobi,
-        double omega = 1.0,
-        Cycle cycle = cycle::v_cycle
+        double omega = 2.0 / 3.0,
+        Cycle cycle = cycle::V
     );
 }

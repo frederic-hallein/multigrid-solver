@@ -38,8 +38,15 @@ namespace logger {
     inline void info(const std::string& msg, const T& value, const Args&... args) {
         size_t pos = msg.find("{}");
         if (pos != std::string::npos) {
+            std::ostringstream oss;
+            // Use scientific for floating point types (C++11 compatible)
+            if (std::is_floating_point<T>::value) {
+                oss << std::scientific << value;
+            } else {
+                oss << value;
+            }
             std::string formatted = msg;
-            formatted.replace(pos, 2, std::to_string(value));
+            formatted.replace(pos, 2, oss.str());
             info(formatted, args...);
         } else {
             std::cout << "[" << current_time() << "] [INFO] " << msg << '\n';
