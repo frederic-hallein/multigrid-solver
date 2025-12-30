@@ -60,9 +60,9 @@ int main() {
         tolerance,
         u_guess,
         smoother_param,
-        multigrid::cartesian_1d::red_black_gauss_seidel,
+        multigrid::cartesian_1d::red_black_gauss_seidel, // TODO : add extra layer of namspace
         2.0/3.0,
-        multigrid::cartesian_1d::V
+        multigrid::cartesian_1d::V // TODO : add extra layer of namspace
     );
 
     logger::info("u = {}", u);
