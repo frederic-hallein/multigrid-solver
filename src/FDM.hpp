@@ -7,7 +7,7 @@ namespace FDM {
             double f, double h, double sigma
         )
         {
-            return (v_x_neg + v_x_pos - h*h * f) / (2.0 + sigma * h*h);
+            return (v_x_neg + v_x_pos + h*h * f) / (2.0 + sigma * h*h);
         }
 
         inline double helmholtz_2d(
@@ -16,7 +16,7 @@ namespace FDM {
             double f, double h, double sigma
         )
         {
-            return (v_x_neg + v_x_pos + v_y_neg + v_y_pos - h*h * f) / (4.0 + sigma * h*h);
+            return (v_x_neg + v_x_pos + v_y_neg + v_y_pos + h*h * f) / (4.0 + sigma * h*h);
         }
 
         inline double helmholtz_3d(
@@ -26,7 +26,7 @@ namespace FDM {
             double f, double h, double sigma
         )
         {
-            return (v_x_neg + v_x_pos + v_y_neg + v_y_pos + v_z_neg + v_z_pos - h*h * f) / (6.0 + sigma * h*h);
+            return (v_x_neg + v_x_pos + v_y_neg + v_y_pos + v_z_neg + v_z_pos + h*h * f) / (6.0 + sigma * h*h);
         }
     }
 

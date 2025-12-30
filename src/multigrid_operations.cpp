@@ -35,6 +35,24 @@ namespace multigrid_operations {
         return v2h;
     }
 
+    std::vector<double> prolongate(
+        const std::vector<double>& v2h
+    )
+    {
+        std::size_t fine_size = v2h.size() * 2 - 1;
+        std::vector<double> vh(fine_size, 0.0);
+
+        for (std::size_t j = 0; j < v2h.size(); ++j) {
+            vh[2*j] = v2h[j];
+
+            if (j < v2h.size() - 1) {
+                vh[2*j+1] = 0.5 * (v2h[j] + v2h[j+1]);
+            }
+        }
+
+        return vh;
+    }
+
     std::vector<double> direct_solve(
         const std::vector<double>& f,
         double h,
@@ -102,23 +120,5 @@ namespace multigrid_operations {
         }
 
         return x;
-    }
-
-    std::vector<double> prolongate(
-        const std::vector<double>& v2h
-    )
-    {
-        std::size_t fine_size = v2h.size() * 2 - 1;
-        std::vector<double> vh(fine_size, 0.0);
-
-        for (std::size_t j = 0; j < v2h.size(); ++j) {
-            vh[2*j] = v2h[j];
-
-            if (j < v2h.size() - 1) {
-                vh[2*j+1] = 0.5 * (v2h[j] + v2h[j+1]);
-            }
-        }
-
-        return vh;
     }
 }

@@ -18,13 +18,13 @@ namespace multigrid_operations {
         const std::vector<double>& vh
     );
 
+    std::vector<double> prolongate(
+        const std::vector<double>& v2h
+    );
+
     std::vector<double> direct_solve(
         const std::vector<double>& f,
         double h,
         double sigma
-    );
-
-    std::vector<double> prolongate(
-        const std::vector<double>& v2h
     );
 }

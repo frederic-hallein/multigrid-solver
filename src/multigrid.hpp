@@ -8,6 +8,8 @@
 #include "smoother.hpp"
 #include "cycle.hpp"
 #include "grid_init.hpp"
+#include "multigrid_operations.hpp"
+#include "norm.hpp"
 
 namespace multigrid {
     std::vector<double> run_helmholtz_cartesian_1d(
@@ -16,23 +18,12 @@ namespace multigrid {
         double sigma,
         Domain1D domain,
         unsigned int sub_int,
+        unsigned int num_iterations,
+        double tolerance,
         Func1D u_guess = [](double) { return 0.0; },
         const SmootherParam& smoother_param = SmootherParam(),
         const Smoother& smoother = smoother_1d::jacobi,
         double omega = 1.0,
         Cycle cycle = cycle::v_cycle
     );
-
-    // std::vector<double> run_helmholtz_cartesian_2d(
-    //     Func2D rhs_f,
-    //     BoundaryCond2D bc,
-    //     double sigma,
-    //     Domain2D domain,
-    //     unsigned int sub_int,
-    //     Func2D u_guess = [](double, double) { return 0.0; },
-    //     SmootherParam smoother_param = SmootherParam(),
-    //     Smoother smoother = smoother_2d::jacobi,
-    //     double omega = 1.0,
-    //     Cycle cycle = cycle::v_cycle
-    // );
 }

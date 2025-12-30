@@ -26,15 +26,3 @@ namespace smoother_1d {
         v = v_new;
     }
 }
-
-namespace smoother_2d {
-    // void jacobi(
-    //     const Grid& grid,
-    //     double h,
-    //     double sigma,
-    //     double omega
-    // )
-    // {
-    //     // TODO
-    // }
-}

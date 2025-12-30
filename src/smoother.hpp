@@ -30,28 +30,3 @@ namespace smoother_1d {
     //     double omega = 1.0
     // );
 }
-namespace smoother_2d {
-    // void jacobi(
-    //     std::vector<double>& v,
-    //     const std::vector<double>& f,
-    //     double h,
-    //     double sigma,
-    //     double omega = 1.0
-    // );
-
-    // void gauss_seidel(
-    //     std::vector<double>& v,
-    //     const std::vector<double>& f,
-    //     double h,
-    //     double sigma,
-    //     double omega = 1.0
-    // );
-
-    // void red_black_gauss_seidel(
-    //     std::vector<double>& v,
-    //     const std::vector<double>& f,
-    //     double h,
-    //     double sigma,
-    //     double omega = 1.0
-    // );
-}
