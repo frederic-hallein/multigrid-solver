@@ -16,17 +16,17 @@
 
 namespace multigrid::cartesian_1d {
     std::vector<double> run(
-        Func1D rhs_f,
-        BoundaryCond1D bc,
+        const Func1D& rhs_f,
+        const BoundaryCond1D& bc,
         double sigma,
-        Domain1D domain,
+        const Domain1D& domain,
         unsigned int sub_int,
         unsigned int num_iterations,
         double tolerance = 1e-6,
-        Func1D u_guess = [](double) { return 0.0; },
+        const Func1D& u_guess = [](double) { return 0.0; },
         const SmootherParam& smoother_param = SmootherParam(),
         const Smoother& smoother = jacobi,
         double omega = 2.0 / 3.0,
-        Cycle cycle = V
+        const Cycle& cycle = V
     );
 }

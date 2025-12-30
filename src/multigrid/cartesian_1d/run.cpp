@@ -2,18 +2,18 @@
 
 namespace multigrid::cartesian_1d {
     std::vector<double> run(
-        Func1D rhs_f,
-        BoundaryCond1D bc,
+        const Func1D& rhs_f,
+        const BoundaryCond1D& bc,
         double sigma,
-        Domain1D dom,
+        const Domain1D& dom,
         unsigned int sub_int,
         unsigned int num_iterations,
         double tolerance,
-        Func1D u_guess,
+        const Func1D& u_guess,
         const SmootherParam& smoother_param,
         const Smoother& smoother,
         double omega,
-        Cycle cycle
+        const Cycle& cycle
     )
     {
         if (sub_int == 0) {
