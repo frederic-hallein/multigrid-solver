@@ -82,7 +82,7 @@ namespace multigrid::cartesian_1d {
             // find pivot
             std::size_t pivot = k;
             for (std::size_t i = k + 1; i < n; ++i) {
-                if (std::fabs(A[i][k]) > std::fabs(A[pivot][k])) {
+                if (std::abs(A[i][k]) > std::abs(A[pivot][k])) {
                     pivot = i;
                 }
             }
@@ -95,7 +95,7 @@ namespace multigrid::cartesian_1d {
 
             // elimination
             for (std::size_t i = k + 1; i < n; ++i) {
-                if (std::fabs(A[k][k]) < 1e-14) continue;
+                if (std::abs(A[k][k]) < 1e-14) continue;
                 double factor = A[i][k] / A[k][k];
                 for (std::size_t j = k; j < n; ++j) {
                     A[i][j] -= factor * A[k][j];

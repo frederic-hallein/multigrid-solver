@@ -8,9 +8,8 @@
 #include <ctime>
 #include <sstream>
 
-// TODO : make {} usable for other types besides vector
-namespace logger {
-    inline std::string current_time() {
+namespace {
+    std::string current_time() {
         auto now = std::chrono::system_clock::now();
         std::time_t t = std::chrono::system_clock::to_time_t(now);
         std::tm tm = *std::localtime(&t);
@@ -30,7 +29,10 @@ namespace logger {
         oss << ")";
         return oss.str();
     }
+}
 
+namespace logger {
+    // INFO
     inline void info(const std::string& msg) {
         std::cout << "[" << current_time() << "] [INFO] " << msg << '\n';
     }
@@ -40,7 +42,6 @@ namespace logger {
         size_t pos = msg.find("{}");
         if (pos != std::string::npos) {
             std::ostringstream oss;
-            // Use scientific for floating point types (C++11 compatible)
             if (std::is_floating_point<T>::value) {
                 oss << std::scientific << value;
             } else {
@@ -66,18 +67,24 @@ namespace logger {
         }
     }
 
-
+    // WARNING
     inline void warning(const std::string& msg) {
         std::cout << "[" << current_time() << "] [WARNING] " << msg << '\n';
     }
 
-    template <typename T>
-    inline void warning(const std::string& msg, const T& value) {
+    template <typename T, typename... Args>
+    inline void warning(const std::string& msg, const T& value, const Args&... args) {
         size_t pos = msg.find("{}");
         if (pos != std::string::npos) {
+            std::ostringstream oss;
+            if (std::is_floating_point<T>::value) {
+                oss << std::scientific << value;
+            } else {
+                oss << value;
+            }
             std::string formatted = msg;
-            formatted.replace(pos, 2, std::to_string(value));
-            std::cout << "[" << current_time() << "] [WARNING] " << formatted << '\n';
+            formatted.replace(pos, 2, oss.str());
+            warning(formatted, args...);
         } else {
             std::cout << "[" << current_time() << "] [WARNING] " << msg << '\n';
         }
@@ -95,18 +102,24 @@ namespace logger {
         }
     }
 
-
+    // ERROR
     inline void error(const std::string& msg) {
         std::cout << "[" << current_time() << "] [ERROR] " << msg << '\n';
     }
 
-    template <typename T>
-    inline void error(const std::string& msg, const T& value) {
+    template <typename T, typename... Args>
+    inline void error(const std::string& msg, const T& value, const Args&... args) {
         size_t pos = msg.find("{}");
         if (pos != std::string::npos) {
+            std::ostringstream oss;
+            if (std::is_floating_point<T>::value) {
+                oss << std::scientific << value;
+            } else {
+                oss << value;
+            }
             std::string formatted = msg;
-            formatted.replace(pos, 2, std::to_string(value));
-            std::cout << "[" << current_time() << "] [ERROR] " << formatted << '\n';
+            formatted.replace(pos, 2, oss.str());
+            error(formatted, args...);
         } else {
             std::cout << "[" << current_time() << "] [ERROR] " << msg << '\n';
         }

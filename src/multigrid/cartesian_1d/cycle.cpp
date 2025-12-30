@@ -1,7 +1,6 @@
 #include "cycle.hpp"
-
-namespace {
-    void v_cycle_recursive(
+namespace multigrid::cartesian_1d {
+    void V(
         std::vector<Grid>& grids,
         std::size_t level,
         double h,
@@ -31,7 +30,7 @@ namespace {
 
         std::fill(grids[level + 1].v.begin(), grids[level + 1].v.end(), 0.0);
 
-        v_cycle_recursive(grids, level + 1, 2 * h, sigma, omega, smoother, smoother_param);
+        V(grids, level + 1, 2 * h, sigma, omega, smoother, smoother_param);
 
         logger::info("Prolongating and correcting (level = {})", level);
         std::vector<double> correction = multigrid::cartesian_1d::prolongate(grids[level + 1].v);
@@ -43,19 +42,5 @@ namespace {
             logger::info("Post-smoothing ({}/{})", iter, smoother_param.nu_2);
             smoother(grid.v, grid.f, h, sigma, omega);
         }
-    }
-}
-
-namespace multigrid::cartesian_1d {
-    void V(
-        std::vector<Grid>& grids,
-        double h,
-        double sigma,
-        double omega,
-        const Smoother& smoother,
-        const SmootherParam& smoother_param
-    )
-    {
-        v_cycle_recursive(grids, 0, h, sigma, omega, smoother, smoother_param);
     }
 }

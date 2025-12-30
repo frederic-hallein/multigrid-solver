@@ -16,6 +16,11 @@ namespace multigrid::cartesian_1d {
         Cycle cycle
     )
     {
+        if (sub_int == 0) {
+            logger::error("Sub intervals cannot be 0.");
+            return {};
+        }
+
         if (sub_int % 2 != 0) {
             logger::error("Sub intervals are not a multiple of 2.");
             return {};
@@ -25,7 +30,7 @@ namespace multigrid::cartesian_1d {
 
         double h = (dom.x_max - dom.x_min) / sub_int;
         for (int iter = 0; iter < num_iterations; ++iter) {
-            cycle(grids, h, sigma, omega, smoother, smoother_param);
+            cycle(grids, 0, h, sigma, omega, smoother, smoother_param);
 
             auto r = compute_residual(grids[0].v, grids[0].f, h, sigma);
             double residual_norm = L2(r);
