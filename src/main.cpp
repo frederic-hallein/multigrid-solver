@@ -1,7 +1,7 @@
 #include <cmath>
 
 #include "logger.hpp"
-#include "multigrid.hpp"
+#include "multigrid/cartesian_1d/run.hpp"
 
 
 // double f(double x) {
@@ -43,14 +43,14 @@ int main() {
     unsigned int sub_int = 16; // #subintervals -> n + 1 grid points
     Domain1D dom{ 0.0, 1.0 };
     BoundaryCond1D bc{ zero_boundary, zero_boundary };
-    SmootherParam smoother_param{ 1, 1 };
+    SmootherParam smoother_param{ 3, 3 };
     double sigma = 0.0;
 
     unsigned int num_iterations = 1000;
-    double tolerance = 1e-8;
+    double tolerance = 1e-6;
 
     // TODO : return struct object containing all info from MG instead of only solution u
-    std::vector<double> u = multigrid::run_helmholtz_cartesian_1d(
+    std::vector<double> u = multigrid::cartesian_1d::run(
         f,
         bc,
         sigma,
