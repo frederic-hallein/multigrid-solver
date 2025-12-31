@@ -19,4 +19,5 @@ def plot_convergence_history(df: pd.DataFrame) -> None:
     plt.grid(True, which='both', ls='--')
     plt.legend()
     plt.tight_layout()
+    plt.savefig("plots/convergence_history.png", dpi=300)
     plt.show()
