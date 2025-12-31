@@ -1,8 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <chrono>
 
 #include "../../logger.hpp"
+#include "../../common/io.hpp"
 #include "../../common/type_alias.hpp"
 #include "../../common/boundary_condition.hpp"
 #include "../../common/domain.hpp"
@@ -15,7 +17,13 @@
 #include "operations.hpp"
 
 namespace multigrid::cartesian_1d {
-    std::vector<double> run(
+    struct MG1DResults {
+        std::vector<std::vector<double>> v;
+        std::vector<unsigned int> iter;
+        std::vector<double> residual_norm;
+    };
+
+    MG1DResults run(
         const Func1D& rhs_f,
         const BoundaryCond1D& bc,
         double sigma,
@@ -26,7 +34,7 @@ namespace multigrid::cartesian_1d {
         const Func1D& u_guess = [](double) { return 0.0; },
         const SmootherParam& smoother_param = SmootherParam(),
         const Smoother& smoother = jacobi,
-        double omega = 2.0 / 3.0,
+        double omega = 1.0,
         const Cycle& cycle = V
     );
 }

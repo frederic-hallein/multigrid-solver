@@ -1,7 +1,7 @@
 #include "run.hpp"
 
 namespace multigrid::cartesian_1d {
-    std::vector<double> run(
+    MG1DResults run(
         const Func1D& rhs_f,
         const BoundaryCond1D& bc,
         double sigma,
@@ -26,22 +26,35 @@ namespace multigrid::cartesian_1d {
             return {};
         }
 
+        MG1DResults results;
+
         std::vector<Grid> grids = init_grids(rhs_f, u_guess, dom, bc, sub_int);
 
         double h = (dom.x_max - dom.x_min) / sub_int;
+        save_params_yaml("../data/params.yaml", dom, h, sub_int, tolerance, num_iterations);
+
+        logger::info("Running multigrid...");
+        auto start = std::chrono::high_resolution_clock::now();
         for (int iter = 0; iter < num_iterations; ++iter) {
             cycle(grids, 0, h, sigma, omega, smoother, smoother_param);
 
             auto r = compute_residual(grids[0].v, grids[0].f, h, sigma);
             double residual_norm = L2(r);
 
-            logger::info("L2(r) = {} at iter = {}", residual_norm, iter);
+            results.v.push_back(grids[0].v);
+            results.iter.push_back(iter);
+            results.residual_norm.push_back(residual_norm);
+
+            logger::debug("L2(r) = {} at iter = {}", residual_norm, iter);
             if (residual_norm < tolerance) {
-                logger::info("Converged at iteration step {}", iter);
-                return grids[0].v;
+                auto end = std::chrono::high_resolution_clock::now();
+                std::chrono::duration<double> elapsed = end - start;
+                logger::info("Converged at iteration step ({}/{}) with tolerance = {}", iter, num_iterations, tolerance);
+                logger::info("Elapsed time: {} seconds", elapsed.count());
+                return results;
             }
         }
 
-        return {};
+        return results; // TODO: make optional or return empty results
     }
 }

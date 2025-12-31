@@ -10,21 +10,21 @@ namespace multigrid::cartesian_1d {
         const SmootherParam& smoother_param
     )
     {
-        logger::info("Running V-Cycle (level = {})", level);
+        logger::debug("Running V-Cycle (level = {})", level);
         auto& grid = grids[level];
 
         if (level == grids.size() - 1) {
-            logger::info("Reached coarsest grid. Directly solve for v.");
+            logger::debug("Reached coarsest grid. Directly solve for v.");
             grid.v = multigrid::cartesian_1d::direct_solve(grid.f, h, sigma);
             return;
         }
 
         for (unsigned int iter = 1; iter <= smoother_param.nu_1; ++iter) {
-            logger::info("Pre-smoothing ({}/{})", iter, smoother_param.nu_1);
+            logger::debug("Pre-smoothing ({}/{})", iter, smoother_param.nu_1);
             smoother(grid.v, grid.f, h, sigma, omega);
         }
 
-        logger::info("Coarsest grid not reached. Call V-Cycle recursively.");
+        logger::debug("Coarsest grid not reached. Call V-Cycle recursively.");
         std::vector<double> residual = multigrid::cartesian_1d::compute_residual(grid.v, grid.f, h, sigma);
         grids[level + 1].f = multigrid::cartesian_1d::restrict_residual(residual);
 
@@ -32,14 +32,14 @@ namespace multigrid::cartesian_1d {
 
         V(grids, level + 1, 2 * h, sigma, omega, smoother, smoother_param);
 
-        logger::info("Prolongating and correcting (level = {})", level);
+        logger::debug("Prolongating and correcting (level = {})", level);
         std::vector<double> correction = multigrid::cartesian_1d::prolongate(grids[level + 1].v);
         for (size_t i = 0; i < grid.v.size(); ++i) {
             grid.v[i] += correction[i];
         }
 
         for (unsigned int iter = 1; iter <= smoother_param.nu_2; ++iter) {
-            logger::info("Post-smoothing ({}/{})", iter, smoother_param.nu_2);
+            logger::debug("Post-smoothing ({}/{})", iter, smoother_param.nu_2);
             smoother(grid.v, grid.f, h, sigma, omega);
         }
     }

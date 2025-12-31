@@ -8,6 +8,7 @@
 #include <ctime>
 #include <sstream>
 
+// TODO: move to common
 namespace {
     std::string current_time() {
         auto now = std::chrono::system_clock::now();
@@ -32,7 +33,50 @@ namespace {
 }
 
 namespace logger {
-    // INFO
+    // --- DEBUG ---
+    #ifndef NDEBUG
+    inline void debug(const std::string& msg) {
+        std::cout << "[" << current_time() << "] [DEBUG] " << msg << '\n';
+    }
+
+    template <typename T, typename... Args>
+    inline void debug(const std::string& msg, const T& value, const Args&... args) {
+        size_t pos = msg.find("{}");
+        if (pos != std::string::npos) {
+            std::ostringstream oss;
+            if (std::is_floating_point<T>::value) {
+                oss << std::scientific << value;
+            } else {
+                oss << value;
+            }
+            std::string formatted = msg;
+            formatted.replace(pos, 2, oss.str());
+            debug(formatted, args...);
+        } else {
+            std::cout << "[" << current_time() << "] [DEBUG] " << msg << '\n';
+        }
+    }
+
+    template <typename T>
+    inline void debug(const std::string& msg, const std::vector<T>& vec) {
+        size_t pos = msg.find("{}");
+        if (pos != std::string::npos && !vec.empty()) {
+            std::string formatted = msg;
+            formatted.replace(pos, 2, format_vec(vec));
+            std::cout << "[" << current_time() << "] [DEBUG] " << formatted << '\n';
+        } else {
+            std::cout << "[" << current_time() << "] [DEBUG] " << msg << '\n';
+        }
+    }
+    #else
+    inline void debug(const std::string&) {}
+    template <typename T, typename... Args>
+    inline void debug(const std::string&, const T&, const Args&...) {}
+    template <typename T>
+    inline void debug(const std::string&, const std::vector<T>&) {}
+    #endif
+
+    //  --- INFO ---
     inline void info(const std::string& msg) {
         std::cout << "[" << current_time() << "] [INFO] " << msg << '\n';
     }
@@ -67,7 +111,7 @@ namespace logger {
         }
     }
 
-    // WARNING
+    // --- WARNING ---
     inline void warning(const std::string& msg) {
         std::cout << "[" << current_time() << "] [WARNING] " << msg << '\n';
     }
@@ -102,7 +146,7 @@ namespace logger {
         }
     }
 
-    // ERROR
+    // --- ERROR ---
     inline void error(const std::string& msg) {
         std::cout << "[" << current_time() << "] [ERROR] " << msg << '\n';
     }

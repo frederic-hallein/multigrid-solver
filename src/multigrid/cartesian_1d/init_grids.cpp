@@ -9,7 +9,7 @@ namespace multigrid::cartesian_1d {
         unsigned int sub_int
     )
     {
-        logger::info("Initializing 1D cartesian grid.");
+        logger::info("Initializing 1D cartesian grid...");
 
         std::vector<Grid> grids;
         bool is_finest = true;
@@ -45,6 +45,7 @@ namespace multigrid::cartesian_1d {
             sub_int_current_grid /= 2;
         }
 
+        logger::info("Created {} level multigrid", grids.size());
         return grids;
     }
 }
