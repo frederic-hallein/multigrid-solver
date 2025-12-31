@@ -9,9 +9,9 @@ double f(double x) {
     return 4.0 * M_PI * M_PI * sin(2 * M_PI * x);
 }
 
-// double u_exact(double x) {
-//     return sin(2 * M_PI * x);
-// }
+double u_exact(double x) {
+    return sin(2 * M_PI * x);
+}
 
 double u_guess(double x) {
     return 0.0;
@@ -41,13 +41,13 @@ double zero_boundary(double x) {
 // }
 
 int main() {
-    unsigned int sub_int = 64; // #subintervals -> n + 1 grid points
+    unsigned int sub_int = 512; // #subintervals -> n + 1 grid points
     Domain1D dom{ 0.0, 1.0 };
     BoundaryCond1D bc{ zero_boundary, zero_boundary };
-    SmootherParam smoother_param{ 3, 3 };
+    SmootherParam smoother_param{ 1, 1 };
     double sigma = 0.0;
 
-    unsigned int num_iterations = 100;
+    unsigned int num_iterations = 1000;
     double tolerance = 1e-8;
 
     auto results = multigrid::cartesian_1d::run(
@@ -56,8 +56,13 @@ int main() {
         2.0/3.0, multigrid::cartesian_1d::V // TODO: put inside another namespace
     );
 
-    save_solutions_csv("../data/solutions.csv", results.iter, results.v);
-    save_residuals_norm_csv("../data/residuals_norm.csv", results.iter, results.residual_norm); // TODO : calculate error norms inside this function instead of Python
+    if (!results) {
+        logger::error("Did not converge within the maximum number of iterations ({}).", num_iterations);
+        return 1;
+    }
+
+    save_solutions_csv("../data/solutions.csv", results->v);
+    save_convergence_history_csv("../data/convergence_history.csv", results->residual_norm, results->v, dom, sub_int, u_exact);
 
     return 0;
 }

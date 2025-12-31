@@ -1,3 +1,4 @@
 build/
 TODO.txt
 plotting/.venv
+plotting/__pycache__/

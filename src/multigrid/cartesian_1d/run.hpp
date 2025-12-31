@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <vector>
 #include <chrono>
 
@@ -19,11 +20,10 @@
 namespace multigrid::cartesian_1d {
     struct MG1DResults {
         std::vector<std::vector<double>> v;
-        std::vector<unsigned int> iter;
         std::vector<double> residual_norm;
     };
 
-    MG1DResults run(
+    std::optional<MG1DResults> run(
         const Func1D& rhs_f,
         const BoundaryCond1D& bc,
         double sigma,

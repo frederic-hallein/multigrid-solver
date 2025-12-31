@@ -1,7 +1,7 @@
 #include "run.hpp"
 
 namespace multigrid::cartesian_1d {
-    MG1DResults run(
+    std::optional<MG1DResults> run(
         const Func1D& rhs_f,
         const BoundaryCond1D& bc,
         double sigma,
@@ -31,7 +31,6 @@ namespace multigrid::cartesian_1d {
         std::vector<Grid> grids = init_grids(rhs_f, u_guess, dom, bc, sub_int);
 
         double h = (dom.x_max - dom.x_min) / sub_int;
-        save_params_yaml("../data/params.yaml", dom, h, sub_int, tolerance, num_iterations);
 
         logger::info("Running multigrid...");
         auto start = std::chrono::high_resolution_clock::now();
@@ -42,7 +41,6 @@ namespace multigrid::cartesian_1d {
             double residual_norm = L2(r);
 
             results.v.push_back(grids[0].v);
-            results.iter.push_back(iter);
             results.residual_norm.push_back(residual_norm);
 
             logger::debug("L2(r) = {} at iter = {}", residual_norm, iter);
@@ -55,6 +53,6 @@ namespace multigrid::cartesian_1d {
             }
         }
 
-        return results; // TODO: make optional or return empty results
+        return std::nullopt;
     }
 }
