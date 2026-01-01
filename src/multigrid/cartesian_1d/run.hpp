@@ -5,6 +5,7 @@
 #include <chrono>
 
 #include "../../logger.hpp"
+#include "../../config.hpp"
 #include "../../common/io.hpp"
 #include "../../common/type_alias.hpp"
 #include "../../common/boundary_condition.hpp"
@@ -18,6 +19,7 @@
 #include "operations.hpp"
 
 namespace multigrid::cartesian_1d {
+    // TODO : update return struct
     struct MG1DResults {
         std::vector<std::vector<double>> v;
         std::vector<double> residual_norm;
@@ -25,17 +27,10 @@ namespace multigrid::cartesian_1d {
 
     std::optional<MG1DResults> run(
         const Func1D& rhs_f,
-        const BoundaryCond1D& bc,
         double sigma,
-        const Domain1D& domain,
-        unsigned int sub_int,
-        unsigned int num_iterations,
-        double tolerance = 1e-6,
-        const Func1D& u_guess = [](double) { return 0.0; },
-        const SmootherParam& smoother_param = SmootherParam(),
-        const Smoother& smoother = smoother::jacobi,
-        double omega = 1.0,
-        const Cycle& cycle = cycle::V,
-        const Norm& norm = L2
+        Domain1D dom,
+        const BoundaryCond1D& bc,
+        Config config,
+        const Func1D& u_guess = [](double) { return 0.0; }
     );
 }

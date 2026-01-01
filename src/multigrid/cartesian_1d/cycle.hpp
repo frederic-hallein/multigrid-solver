@@ -7,9 +7,9 @@
 #include "../../common/smoother_param.hpp"
 
 #include "operations.hpp"
-namespace multigrid::cartesian_1d::cycle {
+namespace multigrid::cartesian_1d {
     /*
-    V(grids, 0, ...)
+    v_cycle(grids, 0, ...)
       └─> V(grids, 1, ...)
             └─> V(grids, 2, ...)
                   └─> V(grids, 3, ...)  // coarsest, direct solve, return
@@ -17,7 +17,27 @@ namespace multigrid::cartesian_1d::cycle {
             <-- prolongate, correct, post-smooth (level 1)
       <-- prolongate, correct, post-smooth (level 0)
     */
-    void V(
+    void v_cycle(
+        std::vector<Grid>& grids,
+        std::size_t level,
+        double h,
+        double sigma,
+        double omega,
+        const Smoother& smoother,
+        const SmootherParam& smoother_param
+    );
+
+    void f_cycle(
+        std::vector<Grid>& grids,
+        std::size_t level,
+        double h,
+        double sigma,
+        double omega,
+        const Smoother& smoother,
+        const SmootherParam& smoother_param
+    );
+
+    void w_cycle(
         std::vector<Grid>& grids,
         std::size_t level,
         double h,

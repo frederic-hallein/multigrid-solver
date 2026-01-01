@@ -4,8 +4,15 @@
 
 ## Build & Test
 
-This project uses the Clang compiler.
-If you don’t have Clang, install it with your package manager (e.g., `sudo apt install clang`).
+This project uses the Clang compiler and requires yaml-cpp for configuration parsing.
+
+### Prerequisites
+
+Install Clang and yaml-cpp:
+
+```sh
+sudo apt install clang libyaml-cpp-dev
+```
 
 ### Clone with submodules
 
@@ -34,6 +41,12 @@ make
 
 ```sh
 ./main
+```
+
+To run with a custom config file:
+
+```sh
+./main --config ../data/config.yaml
 ```
 
 ### Run the tests

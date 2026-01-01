@@ -1,0 +1,14 @@
+grid:
+  sub_intervals: 64
+
+solver:
+  num_iterations: 1000
+  tolerance: 1.0e-10
+  smoother: RBGS
+  cycle: V
+  norm: LINF
+  omega: 0.666667
+
+smoother:
+  pre_iterations: 2
+  post_iterations: 2

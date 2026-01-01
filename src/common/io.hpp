@@ -9,21 +9,6 @@
 #include "domain.hpp"
 #include "norm.hpp"
 
-inline void save_params_yaml(
-    const std::string& filename,
-    const Domain1D& dom,
-    unsigned int sub_int
-)
-{
-    std::filesystem::create_directories(std::filesystem::path(filename).parent_path());
-    std::ofstream file(filename);
-    file << "domain:\n";
-    file << "  x_min: " << dom.x_min << "\n";
-    file << "  x_max: " << dom.x_max << "\n";
-    file << "grid:\n";
-    file << "  sub_intervals: " << sub_int << "\n";
-}
-
 inline void save_solutions_csv(
     const std::string& filename,
     const std::vector<std::vector<double>>& v
@@ -49,7 +34,7 @@ inline void save_convergence_history_csv(
     const Domain1D& dom,
     unsigned int sub_int,
     const Func1D& u_exact,
-    const Norm& norm = L2
+    const Norm& norm
 )
 {
     std::filesystem::create_directories(std::filesystem::path(filename).parent_path());

@@ -3,56 +3,51 @@
 namespace multigrid::cartesian_1d {
     std::optional<MG1DResults> run(
         const Func1D& rhs_f,
-        const BoundaryCond1D& bc,
         double sigma,
-        const Domain1D& dom,
-        unsigned int sub_int,
-        unsigned int num_iterations,
-        double tolerance,
-        const Func1D& u_guess,
-        const SmootherParam& smoother_param,
-        const Smoother& smoother,
-        double omega,
-        const Cycle& cycle,
-        const Norm& norm
+        Domain1D dom,
+        const BoundaryCond1D& bc,
+        Config config,
+        const Func1D& u_guess
     )
     {
-        if (sub_int == 0) {
+        if (config.sub_int == 0) {
             logger::error("Sub intervals cannot be 0.");
-            return {};
+            return std::nullopt;
         }
 
-        if (sub_int % 2 != 0) {
+        if (config.sub_int % 2 != 0) {
             logger::error("Sub intervals are not a multiple of 2.");
-            return {};
+            return std::nullopt;
         }
-
-        save_params_yaml("../data/params.yaml", dom, sub_int);
 
         MG1DResults results;
-        std::vector<Grid> grids = init_grids(rhs_f, u_guess, dom, bc, sub_int);
-        double h = (dom.x_max - dom.x_min) / sub_int;
+        std::vector<Grid> grids = init_grids(rhs_f, u_guess, dom, bc, config.sub_int);
+        double h = (dom.x_max - dom.x_min) / config.sub_int;
 
         logger::info("Running multigrid...");
         auto start = std::chrono::high_resolution_clock::now();
-        for (int iter = 0; iter < num_iterations; ++iter) {
-            cycle(grids, 0, h, sigma, omega, smoother, smoother_param);
+        for (unsigned int iter = 0; iter < config.num_iter; ++iter) {
+            config.cycle(grids, 0, h, sigma, config.omega, config.smoother, config.smoother_param);
 
             auto r = compute_residual(grids[0].v, grids[0].f, h, sigma);
-            double residual_norm = norm(r);
+            double residual_norm = config.norm(r);
 
             results.v.push_back(grids[0].v);
             results.residual_norm.push_back(residual_norm);
 
-            if (residual_norm < tolerance) {
+            if (residual_norm < config.tolerance) {
                 auto end = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double> elapsed = end - start;
-                logger::info("Converged at iteration step ({}/{}) with tolerance = {}", iter, num_iterations, tolerance);
+                logger::info("Converged at iteration step ({}/{}) with tolerance = {}", iter, config.num_iter, config.tolerance);
                 logger::info("Elapsed time: {} seconds", elapsed.count());
+
+                // save_solutions_csv("../data/solutions.csv", results.v);
+                // save_convergence_history_csv("../data/convergence_history.csv", results.residual_norm, results.v, dom, sub_int, u_exact, norm);
                 return results;
             }
         }
 
+        logger::error("Did not converge within the maximum number of iterations ({}).", config.num_iter);
         return std::nullopt;
     }
 }

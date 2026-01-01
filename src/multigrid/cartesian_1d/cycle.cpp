@@ -1,6 +1,6 @@
 #include "cycle.hpp"
-namespace multigrid::cartesian_1d::cycle {
-    void V(
+namespace multigrid::cartesian_1d {
+    void v_cycle(
         std::vector<Grid>& grids,
         std::size_t level,
         double h,
@@ -15,7 +15,7 @@ namespace multigrid::cartesian_1d::cycle {
 
         if (level == grids.size() - 1) {
             logger::debug("Reached coarsest grid. Directly solve for v.");
-            grid.v = multigrid::cartesian_1d::direct_solve(grid.f, h, sigma);
+            grid.v = direct_solve(grid.f, h, sigma);
             return;
         }
 
@@ -25,15 +25,15 @@ namespace multigrid::cartesian_1d::cycle {
         }
 
         logger::debug("Coarsest grid not reached. Call V-Cycle recursively.");
-        std::vector<double> residual = multigrid::cartesian_1d::compute_residual(grid.v, grid.f, h, sigma);
-        grids[level + 1].f = multigrid::cartesian_1d::restrict_residual(residual);
+        std::vector<double> residual = compute_residual(grid.v, grid.f, h, sigma);
+        grids[level + 1].f = restrict_residual(residual);
 
         std::fill(grids[level + 1].v.begin(), grids[level + 1].v.end(), 0.0);
 
-        V(grids, level + 1, 2 * h, sigma, omega, smoother, smoother_param);
+        v_cycle(grids, level + 1, 2 * h, sigma, omega, smoother, smoother_param);
 
         logger::debug("Prolongating and correcting (level = {})", level);
-        std::vector<double> correction = multigrid::cartesian_1d::prolongate(grids[level + 1].v);
+        std::vector<double> correction = prolongate(grids[level + 1].v);
         for (size_t i = 0; i < grid.v.size(); ++i) {
             grid.v[i] += correction[i];
         }
@@ -42,5 +42,31 @@ namespace multigrid::cartesian_1d::cycle {
             logger::debug("Post-smoothing ({}/{})", iter, smoother_param.nu_2);
             smoother(grid.v, grid.f, h, sigma, omega);
         }
+    }
+
+    void f_cycle(
+        std::vector<Grid>& grids,
+        std::size_t level,
+        double h,
+        double sigma,
+        double omega,
+        const Smoother& smoother,
+        const SmootherParam& smoother_param
+    )
+    {
+        // TODO
+    }
+
+    void w_cycle(
+        std::vector<Grid>& grids,
+        std::size_t level,
+        double h,
+        double sigma,
+        double omega,
+        const Smoother& smoother,
+        const SmootherParam& smoother_param
+    )
+    {
+        // TODO
     }
 }

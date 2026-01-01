@@ -5,6 +5,9 @@ project("multigrid-solver")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Find yaml-cpp package
+find_package(yaml-cpp REQUIRED)
+
 # --------------------------------------------------
 # Source files: recurse into subdirectories under src/
 file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
@@ -32,6 +35,9 @@ add_subdirectory(external/googletest)
 # --------------------------------------------------
 # Test files (all .cpp files in tests/)
 file(GLOB TEST_FILES ${CMAKE_SOURCE_DIR}/tests/*.cpp)
+
+# Link yaml-cpp to main executable
+target_link_libraries(main yaml-cpp)
 
 foreach(test_src ${TEST_FILES})
     get_filename_component(test_name ${test_src} NAME_WE)
