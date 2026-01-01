@@ -41,8 +41,9 @@ namespace multigrid::cartesian_1d {
                 logger::info("Converged at iteration step ({}/{}) with tolerance = {}", iter, config.num_iter, config.tolerance);
                 logger::info("Elapsed time: {} seconds", elapsed.count());
 
-                // save_solutions_csv("../data/solutions.csv", results.v);
-                // save_convergence_history_csv("../data/convergence_history.csv", results.residual_norm, results.v, dom, sub_int, u_exact, norm);
+                save_solutions_csv("../data/solutions.csv", results.v);
+                // TODO : handle u_exact by setting it optional. If not specified, do not calculate error norm
+                // save_convergence_history_csv("../data/convergence_history.csv", results.residual_norm, results.v, dom, config.sub_int, u_exact, config.norm);
                 return results;
             }
         }
