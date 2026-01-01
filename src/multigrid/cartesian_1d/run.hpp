@@ -33,8 +33,9 @@ namespace multigrid::cartesian_1d {
         double tolerance = 1e-6,
         const Func1D& u_guess = [](double) { return 0.0; },
         const SmootherParam& smoother_param = SmootherParam(),
-        const Smoother& smoother = jacobi,
+        const Smoother& smoother = smoother::jacobi,
         double omega = 1.0,
-        const Cycle& cycle = V
+        const Cycle& cycle = cycle::V,
+        const Norm& norm = L2
     );
 }

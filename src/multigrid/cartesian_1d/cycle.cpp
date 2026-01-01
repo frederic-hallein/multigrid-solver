@@ -1,5 +1,5 @@
 #include "cycle.hpp"
-namespace multigrid::cartesian_1d {
+namespace multigrid::cartesian_1d::cycle {
     void V(
         std::vector<Grid>& grids,
         std::size_t level,

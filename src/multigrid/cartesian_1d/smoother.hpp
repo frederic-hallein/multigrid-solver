@@ -22,7 +22,7 @@ namespace {
         return (1.0 - omega) * v_old + omega * v_new;
     }
 }
-namespace multigrid::cartesian_1d {
+namespace multigrid::cartesian_1d::smoother {
     void jacobi(
         std::vector<double>& v,
         const std::vector<double>& f,

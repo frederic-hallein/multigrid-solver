@@ -122,7 +122,7 @@ TEST(multigrid_operations, direct_solve) {
     }
 }
 
-TEST(DirectSolveTest, direct_solve_zero_rhs) {
+TEST(multigrid_operations, direct_solve_zero_rhs) {
     // Test with zero RHS - solution should be zero everywhere
     std::vector<double> f(5, 0.0);
     double h = 0.25;

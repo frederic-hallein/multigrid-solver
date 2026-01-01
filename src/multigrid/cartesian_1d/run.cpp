@@ -13,7 +13,8 @@ namespace multigrid::cartesian_1d {
         const SmootherParam& smoother_param,
         const Smoother& smoother,
         double omega,
-        const Cycle& cycle
+        const Cycle& cycle,
+        const Norm& norm
     )
     {
         if (sub_int == 0) {
@@ -26,10 +27,10 @@ namespace multigrid::cartesian_1d {
             return {};
         }
 
+        save_params_yaml("../data/params.yaml", dom, sub_int);
+
         MG1DResults results;
-
         std::vector<Grid> grids = init_grids(rhs_f, u_guess, dom, bc, sub_int);
-
         double h = (dom.x_max - dom.x_min) / sub_int;
 
         logger::info("Running multigrid...");
@@ -38,12 +39,11 @@ namespace multigrid::cartesian_1d {
             cycle(grids, 0, h, sigma, omega, smoother, smoother_param);
 
             auto r = compute_residual(grids[0].v, grids[0].f, h, sigma);
-            double residual_norm = L2(r);
+            double residual_norm = norm(r);
 
             results.v.push_back(grids[0].v);
             results.residual_norm.push_back(residual_norm);
 
-            logger::debug("L2(r) = {} at iter = {}", residual_norm, iter);
             if (residual_norm < tolerance) {
                 auto end = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double> elapsed = end - start;

@@ -18,7 +18,7 @@ inline double L2(const std::vector<double>& v) {
 }
 
 inline double Linf(const std::vector<double>& v) {
-    return *std::max_element(v.begin(), v.end(), [](double a, double b) {
+    return std::abs(*std::max_element(v.begin(), v.end(), [](double a, double b) {
         return std::abs(a) < std::abs(b);
-    });
+    }));
 }

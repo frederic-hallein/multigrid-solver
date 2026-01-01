@@ -5,8 +5,9 @@
 #include "../../logger.hpp"
 #include "../../common/type_alias.hpp"
 #include "../../common/smoother_param.hpp"
+
 #include "operations.hpp"
-namespace multigrid::cartesian_1d {
+namespace multigrid::cartesian_1d::cycle {
     /*
     V(grids, 0, ...)
       └─> V(grids, 1, ...)

@@ -10,6 +10,8 @@ using Func1D = std::function<double(double)>;
 using Func2D = std::function<double(double, double)>;
 using Func3D = std::function<double(double, double, double)>;
 
+using Norm = std::function<double(const std::vector<double>&)>;
+
 using Smoother = std::function<void(
     std::vector<double>&,
     const std::vector<double>&,

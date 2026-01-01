@@ -12,7 +12,7 @@ def plot_convergence_history(df: pd.DataFrame) -> None:
         df['iter'], df['error_norm'],
         marker='o', label=r'$||\mathbf{e}||_2$'
     )
-    plt.xlabel('Iteration Steps')
+    plt.xlabel('Iterations')
     plt.ylabel(r'$||\cdot||_2$')
     plt.yscale('log', base=10)
     plt.title('Convergence History')
