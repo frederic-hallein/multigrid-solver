@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <filesystem>
 
 #include "type_alias.hpp"
 #include "domain.hpp"
@@ -14,6 +15,7 @@ inline void save_params_yaml(
     unsigned int sub_int
 )
 {
+    std::filesystem::create_directories(std::filesystem::path(filename).parent_path());
     std::ofstream file(filename);
     file << "domain:\n";
     file << "  x_min: " << dom.x_min << "\n";
@@ -27,6 +29,7 @@ inline void save_solutions_csv(
     const std::vector<std::vector<double>>& v
 )
 {
+    std::filesystem::create_directories(std::filesystem::path(filename).parent_path());
     std::ofstream file(filename);
     file << "iter;v\n";
     for (size_t k = 0; k < v.size(); ++k) {
@@ -49,6 +52,7 @@ inline void save_convergence_history_csv(
     const Norm& norm = L2
 )
 {
+    std::filesystem::create_directories(std::filesystem::path(filename).parent_path());
     std::ofstream file(filename);
     file << "iter;residual_norm;error_norm\n";
 
