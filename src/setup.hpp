@@ -4,31 +4,8 @@
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
-#include "logger.hpp"
+#include "common/logger.hpp"
 #include "config.hpp"
-
-inline Smoother string_to_smoother(const std::string& s) {
-    if (s == "J") return multigrid::cartesian_1d::jacobi;
-    if (s == "GS") return multigrid::cartesian_1d::gauss_seidel;
-    if (s == "RBGS") return multigrid::cartesian_1d::red_black_gauss_seidel;
-    logger::warning("Unknown smoother '{}', using default: JACOBI.", s);
-    return multigrid::cartesian_1d::jacobi;
-}
-
-inline Cycle string_to_cycle(const std::string& s) {
-    if (s == "V") return multigrid::cartesian_1d::v_cycle;
-    if (s == "W") return multigrid::cartesian_1d::w_cycle;
-    if (s == "F") return multigrid::cartesian_1d::f_cycle;
-    logger::warning("Unknown cycle '{}', using default: V.", s);
-    return multigrid::cartesian_1d::v_cycle;
-}
-
-inline Norm string_to_norm(const std::string& s) {
-    if (s == "L2") return norm::L2;
-    if (s == "LINF") return norm::Linf;
-    logger::warning("Unknown norm '{}', using default: L2.", s);
-    return norm::L2;
-}
 
 inline Config load_config(const std::string& filepath) {
     Config config;
@@ -66,9 +43,40 @@ inline Config load_config(const std::string& filepath) {
         config.sub_int = yaml["grid"]["sub_intervals"].as<unsigned int>();
         config.num_iter = yaml["solver"]["num_iterations"].as<unsigned int>();
         config.tolerance = yaml["solver"]["tolerance"].as<double>();
-        config.smoother = string_to_smoother(yaml["solver"]["smoother"].as<std::string>());
-        config.cycle = string_to_cycle(yaml["solver"]["cycle"].as<std::string>());
-        config.norm = string_to_norm(yaml["solver"]["norm"].as<std::string>());
+
+        std::string smoother_key = yaml["solver"]["smoother"].as<std::string>();
+        auto s_it = smoother_map.find(smoother_key);
+        if (s_it != smoother_map.end()) {
+            config.smoother_name = smoother_key;
+            config.smoother = s_it->second;
+        } else {
+            logger::warning("Unknown smoother '{}', using default: J.", smoother_key);
+            config.smoother_name = "J";
+            config.smoother = smoother_map.at("J");
+        }
+
+        std::string cycle_key = yaml["solver"]["cycle"].as<std::string>();
+        auto c_it = cycle_map.find(cycle_key);
+        if (c_it != cycle_map.end()) {
+            config.cycle_name = cycle_key;
+            config.cycle = c_it->second;
+        } else {
+            logger::warning("Unknown cycle '{}', using default: V.", cycle_key);
+            config.cycle_name = "V";
+            config.cycle = cycle_map.at("V");
+        }
+
+        std::string norm_key = yaml["solver"]["norm"].as<std::string>();
+        auto n_it = norm_map.find(norm_key);
+        if (n_it != norm_map.end()) {
+            config.norm_name = norm_key;
+            config.norm = n_it->second;
+        } else {
+            logger::warning("Unknown norm '{}', using default: L2.", norm_key);
+            config.norm_name = "L2";
+            config.norm = norm_map.at("L2");
+        }
+
         config.omega = yaml["solver"]["omega"].as<double>();
         config.smoother_param.nu_1 = yaml["smoother"]["pre_iterations"].as<unsigned int>();
         config.smoother_param.nu_2 = yaml["smoother"]["post_iterations"].as<unsigned int>();

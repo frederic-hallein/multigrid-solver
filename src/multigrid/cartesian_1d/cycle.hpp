@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../../logger.hpp"
+#include "../../common/logger.hpp"
 #include "../../common/type_alias.hpp"
 #include "../../common/smoother_param.hpp"
 

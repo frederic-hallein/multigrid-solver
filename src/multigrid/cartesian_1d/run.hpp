@@ -4,8 +4,8 @@
 #include <vector>
 #include <chrono>
 
-#include "../../logger.hpp"
 #include "../../config.hpp"
+#include "../../common/logger.hpp"
 #include "../../common/io.hpp"
 #include "../../common/type_alias.hpp"
 #include "../../common/boundary_condition.hpp"
