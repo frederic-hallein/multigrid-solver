@@ -2,12 +2,30 @@
 
 #include <vector>
 #include <string>
+#include <optional>
 #include <fstream>
 #include <filesystem>
 
 #include "type_alias.hpp"
 #include "domain.hpp"
 #include "norm.hpp"
+
+inline void save_grid_points(
+    const std::string& filename,
+    const Domain1D& dom,
+    double h,
+    unsigned int sub_int
+)
+{
+    std::filesystem::create_directories(std::filesystem::path(filename).parent_path());
+    std::ofstream file(filename);
+    file << "x\n";
+
+    for (unsigned int i = 0; i <= sub_int; ++i) {
+        double x = dom.x_min + i * h;
+        file << x << "\n";
+    }
+}
 
 inline void save_solutions_csv(
     const std::string& filename,
@@ -33,25 +51,33 @@ inline void save_convergence_history_csv(
     const std::vector<std::vector<double>>& v,
     const Domain1D& dom,
     unsigned int sub_int,
-    const Func1D& u_exact,
-    const Norm& norm
+    const Norm& norm,
+    const std::optional<Func1D>& u_exact
 )
 {
     std::filesystem::create_directories(std::filesystem::path(filename).parent_path());
     std::ofstream file(filename);
-    file << "iter;residual_norm;error_norm\n";
+
+    if (u_exact) {
+        file << "iter;residual_norm;error_norm\n";
+    } else {
+        file << "iter;residual_norm\n";
+    }
 
     double h = (dom.x_max - dom.x_min) / sub_int;
-
     for (size_t k = 0; k < v.size(); ++k) {
-        std::vector<double> error(v[k].size());
-        for (size_t i = 0; i < v[k].size(); ++i) {
-            double x = dom.x_min + i * h;
-            error[i] = v[k][i] - u_exact(x);
+        file << k << ";" << residual_norm[k];
+
+        if (u_exact) {
+            std::vector<double> error(v[k].size());
+            for (size_t i = 0; i < v[k].size(); ++i) {
+                double x = dom.x_min + i * h;
+                error[i] = v[k][i] - u_exact.value()(x);
+            }
+            double error_norm = norm(error);
+            file << ";" << error_norm;
         }
 
-        double error_norm = norm(error);
-
-        file << k << ";" << residual_norm[k] << ";" << error_norm << "\n";
+        file << "\n";
     }
 }

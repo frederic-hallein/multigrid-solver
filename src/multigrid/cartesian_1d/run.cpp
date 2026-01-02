@@ -7,7 +7,8 @@ namespace multigrid::cartesian_1d {
         Domain1D dom,
         const BoundaryCond1D& bc,
         Config config,
-        const Func1D& u_guess
+        const Func1D& u_guess,
+        const std::optional<Func1D>& u_exact
     )
     {
         if (config.sub_int == 0) {
@@ -38,12 +39,13 @@ namespace multigrid::cartesian_1d {
             if (residual_norm < config.tolerance) {
                 auto end = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double> elapsed = end - start;
-                logger::info("Converged at iteration step ({}/{}) with tolerance = {}", iter, config.num_iter, config.tolerance);
+                logger::info("Converged at iteration step ({}/{})", iter, config.num_iter);
                 logger::info("Elapsed time: {} seconds", elapsed.count());
 
+                save_grid_points("../data/grid_points.csv", dom, h, config.sub_int);
                 save_solutions_csv("../data/solutions.csv", results.v);
-                // TODO : handle u_exact by setting it optional. If not specified, do not calculate error norm
-                // save_convergence_history_csv("../data/convergence_history.csv", results.residual_norm, results.v, dom, config.sub_int, u_exact, config.norm);
+                save_convergence_history_csv("../data/convergence_history.csv", results.residual_norm, results.v, dom, config.sub_int, config.norm, u_exact);
+
                 return results;
             }
         }

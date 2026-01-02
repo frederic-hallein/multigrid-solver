@@ -7,8 +7,8 @@ solver:
   smoother: RBGS
   cycle: V
   norm: L2
-  omega: 0.666667
+  omega: 0.667
 
 smoother:
-  pre_iterations: 1
-  post_iterations: 1
+  pre_iterations: 3
+  post_iterations: 3

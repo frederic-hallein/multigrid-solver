@@ -42,8 +42,8 @@ int main() {
         logger::info("- sub intervals: {}", config.sub_int);
         logger::info("- num iterations: {}", config.num_iter);
         logger::info("- tolerance: {}", config.tolerance);
-        logger::info("- smoother: {} (omega = {})", config.smoother_name, config.omega);
         logger::info("- cycle: {}({}, {})", config.cycle_name, config.smoother_param.nu_1, config.smoother_param.nu_2);
+        logger::info("- smoother: {} (omega = {})", config.smoother_name, config.omega);
         logger::info("- norm: {}", config.norm_name);
         logger::info("-------------------------------\n");
     } catch (const std::exception& e) {
@@ -52,7 +52,7 @@ int main() {
     }
 
     auto results = multigrid::cartesian_1d::run(
-        f, 0.0, dom, bc, config, u_guess
+        f, 0.0, dom, bc, config, u_guess, u_exact
     );
 
     if (!results) {
