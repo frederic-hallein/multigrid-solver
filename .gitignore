@@ -3,4 +3,4 @@ TODO.txt
 plotting/.venv
 plotting/__pycache__/
 data/*.csv
-plotting/plots/
+plotting/plots/*.png

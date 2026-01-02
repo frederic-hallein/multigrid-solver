@@ -2,10 +2,10 @@ grid:
   sub_intervals: 64
 
 solver:
-  num_iterations: 1000
+  num_iterations: 100
   tolerance: 1.0e-10
   smoother: RBGS
-  cycle: V
+  cycle: W
   norm: L2
   omega: 0.667
 

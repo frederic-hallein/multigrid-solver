@@ -16,8 +16,8 @@ inline std::unordered_map<std::string, Smoother> smoother_map{
 
 inline std::unordered_map<std::string, Cycle> cycle_map{
     {"V", multigrid::cartesian_1d::v_cycle},
-    {"W", multigrid::cartesian_1d::w_cycle},
-    {"F", multigrid::cartesian_1d::f_cycle}
+    {"F", multigrid::cartesian_1d::f_cycle},
+    {"W", multigrid::cartesian_1d::w_cycle}
 };
 inline std::unordered_map<std::string, Norm> norm_map{
     {"L2", norm::L2},

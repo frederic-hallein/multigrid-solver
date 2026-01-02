@@ -41,7 +41,7 @@ def plot_convergence_history(df: pd.DataFrame, path: str, config: any) -> None:
         f", {config['solver']['smoother']} "
         f"($\\omega$ = {config['solver']['omega']})"
     )
-    plt.title(f'Convergence History [{approx_title}]')
+    plt.title(f'Convergence History [{approx_title}]', fontweight='bold')
     plt.grid(True, which='both', ls='--')
     plt.legend()
     plt.tight_layout()
