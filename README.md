@@ -33,20 +33,16 @@ git submodule update --init --recursive
 ```sh
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ ..
+cmake -DCMAKE_BUILD_TYPE=<mode> -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ ..
 make
 ```
+
+where `<mode>` can be `Debug` or `Release`.
 
 ### Run the main executable
 
 ```sh
 ./main
-```
-
-To run with a custom config file:
-
-```sh
-./main --config ../data/config.yaml
 ```
 
 ### Run the tests
