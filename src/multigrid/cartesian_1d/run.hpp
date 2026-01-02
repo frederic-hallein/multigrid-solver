@@ -19,7 +19,6 @@
 #include "operations.hpp"
 
 namespace multigrid::cartesian_1d {
-    // TODO : update return struct
     struct MG1DResults {
         std::vector<std::vector<double>> v;
         std::vector<double> residual_norm;

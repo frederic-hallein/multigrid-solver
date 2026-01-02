@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def plot_convergence_history(df: pd.DataFrame, config: any) -> None:
+def plot_convergence_history(df: pd.DataFrame, path: str, config: any) -> None:
     plt.figure()
 
     if config['solver']['norm'] == 'L2':
@@ -45,5 +45,5 @@ def plot_convergence_history(df: pd.DataFrame, config: any) -> None:
     plt.grid(True, which='both', ls='--')
     plt.legend()
     plt.tight_layout()
-    plt.savefig("plots/convergence_history.png", dpi=300)
+    plt.savefig(path, dpi=300)
     plt.show()

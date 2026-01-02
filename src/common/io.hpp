@@ -66,7 +66,7 @@ inline void save_convergence_history_csv(
 
     double h = (dom.x_max - dom.x_min) / sub_int;
     for (size_t k = 0; k < v.size(); ++k) {
-        file << k << ";" << residual_norm[k];
+        file << k+1 << ";" << residual_norm[k];
 
         if (u_exact) {
             std::vector<double> error(v[k].size());

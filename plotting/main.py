@@ -3,6 +3,8 @@ import yaml
 import pandas as pd
 import numpy as np
 
+from datetime import datetime
+
 from plot_convergence_history import plot_convergence_history
 from plot_solution import plot_solution
 
@@ -10,8 +12,11 @@ CONV_HISTORY_PATH = "../data/convergence_history.csv"
 GRID_POINTS_PATH = "../data/grid_points.csv"
 SOLUTIONS_PATH = "../data/solutions.csv"
 
+# def u_exact(x) -> float:
+#     return np.sin(2 * np.pi * x)
+
 def u_exact(x) -> float:
-    return np.sin(2 * np.pi * x)
+    return x * (1.0 - x)
 
 def main() -> None:
     with open("../data/config.yaml", 'r') as f:
@@ -29,8 +34,12 @@ def main() -> None:
 
     os.makedirs("plots", exist_ok=True)
 
-    plot_solution(df_solution, config, u_exact)
-    plot_convergence_history(df_conv_history, config)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    solution_path = f"plots/solution_{timestamp}.png"
+    conv_hist_path = f"plots/convergence_history_{timestamp}.png"
+
+    plot_solution(df_solution, solution_path, config, u_exact)
+    plot_convergence_history(df_conv_history, conv_hist_path, config)
 
 if __name__ == "__main__":
     main()

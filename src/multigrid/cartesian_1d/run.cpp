@@ -27,7 +27,7 @@ namespace multigrid::cartesian_1d {
 
         logger::info("Running multigrid...");
         auto start = std::chrono::high_resolution_clock::now();
-        for (unsigned int iter = 0; iter < config.num_iter; ++iter) {
+        for (unsigned int iter = 1; iter <= config.num_iter; ++iter) {
             config.cycle(grids, 0, h, sigma, config.omega, config.smoother, config.smoother_param);
 
             auto r = compute_residual(grids[0].v, grids[0].f, h, sigma);

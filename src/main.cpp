@@ -6,29 +6,29 @@
 #include "multigrid/cartesian_1d/run.hpp"
 #include "setup.hpp"
 
-double f(double x) { return 4.0 * M_PI * M_PI * sin(2 * M_PI * x); }
+// double f(double x) { return 4.0 * M_PI * M_PI * sin(2 * M_PI * x); }
 
-double u_exact(double x) { return sin(2 * M_PI * x); }
+// double u_exact(double x) { return sin(2 * M_PI * x); }
 
-double u_guess(double x) { return 0.0; }
+// double u_guess(double x) { return 0.0; }
 
-double zero_boundary(double x) { return 0.0; }
+// double zero_boundary(double x) { return 0.0; }
 
-// double f(double x) {
-//     return 2.0;
-// }
+double f(double x) {
+    return 2.0;
+}
 
-// double u_exact(double x) {
-//     return x * (1.0 - x);
-// }
+double u_exact(double x) {
+    return x * (1.0 - x);
+}
 
-// double u_guess(double x) {
-//     return 0.0;
-// }
+double u_guess(double x) {
+    return 0.0;
+}
 
-// double zero_boundary(double x) {
-//     return 0.0;
-// }
+double zero_boundary(double x) {
+    return 0.0;
+}
 
 int main() {
     Domain1D dom{0.0, 1.0};

@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def plot_solution(df: pd.DataFrame, config: any, u_exact=None) -> None:
+def plot_solution(df: pd.DataFrame, path: str, config: any, u_exact=None) -> None:
     plt.figure()
     if u_exact is None:
         print("[WARNING] exact solution not given")
@@ -33,5 +33,5 @@ def plot_solution(df: pd.DataFrame, config: any, u_exact=None) -> None:
     plt.grid(True, which='both', ls='--')
     plt.legend()
     plt.tight_layout()
-    plt.savefig("plots/solution.png", dpi=300)
+    plt.savefig(path, dpi=300)
     plt.show()
