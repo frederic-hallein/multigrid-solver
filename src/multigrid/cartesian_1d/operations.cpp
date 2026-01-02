@@ -23,7 +23,7 @@ namespace multigrid::cartesian_1d {
         std::size_t coarse_size = vh.size() / 2 + 1;
         std::vector<double> v2h(coarse_size, 0.0);
 
-        // TODO: besides full weighted also allow injection
+        // full weighted
         for (std::size_t j = 1; j < coarse_size - 1; ++j) {
             v2h[j] = (vh[2*j-1] + 2 * vh[2*j] + vh[2*j+1]) / 4.0;
         }

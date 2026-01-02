@@ -8,7 +8,6 @@
 #include <ctime>
 #include <sstream>
 
-// TODO: move to common
 namespace {
     std::string current_time() {
         auto now = std::chrono::system_clock::now();

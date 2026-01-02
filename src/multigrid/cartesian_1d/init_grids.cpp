@@ -36,7 +36,7 @@ namespace multigrid::cartesian_1d {
 
             grids.emplace_back(Grid{v, f});
 
-            logger::info(
+            logger::debug(
                 "Created grid (level {}): v.size() = {}, f.size() = {}",
                 grids.size() - 1, v.size(), f.size()
             );
