@@ -6,7 +6,10 @@ A C++ implementation of multigrid methods for efficiently solving elliptic parti
 $$-\nabla^2 u + \sigma u = f(\mathbf{x})$$
 
 where $\sigma \geq 0$.
-This equation is a general form of the **Helmholtz equation**, which is fundamental in many areas of science and engineering. It models phenomena such as heat conduction, electrostatics, steady-state diffusion, and wave propagation. Efficient and accurate solutions are essential for large-scale simulations in computational physics, engineering analysis, and scientific computing.
+
+This equation is often called the **modified Helmholtz equation** or **screened Poisson equation** and plays a fundamental role in various scientific and engineering fields. It describes processes such as heat conduction, electrostatics, steady-state diffusion, and wave propagation. Efficient and accurate numerical solutions are crucial for large-scale simulations in computational physics, engineering analysis, and scientific computing.
+
+
 
 Multigrid methods dramatically accelerate the solution of large linear systems arising from discretized PDEs by combining smoothing on fine grids with corrections from coarser grids, achieving rapid convergence even for challenging problems.
 
@@ -183,7 +186,7 @@ This generates solution and convergence history plots in the `plots/` directory.
 
 ## Example Problem Setup
 
-To demonstrate the solver, we consider a simple 1D Poisson problem (a special case of the Helmholtz equation):
+To demonstrate the solver, we consider a simple 1D Poisson problem (a special case of the modified Helmholtz equation):
 
 $$
 -\frac{d^2u}{dx^2} = 2 \qquad (\sigma = 0)
