@@ -28,7 +28,7 @@ namespace multigrid::cartesian_1d {
     std::optional<MG1DResults> run(
         const ModHelmholtz& pde,
         const Config& config,
-        const Func1D& u_guess = [](double) { return 0.0; },
-        const std::optional<Func1D>& u_exact = std::nullopt
+        const std::optional<Func1D>& u_exact = std::nullopt,
+        const Func1D& u_guess = [](double) { return 0.0; }
     );
 }

@@ -1,17 +1,11 @@
 #include <cmath>
 
-#include "common/io.hpp"
-#include "common/logger.hpp"
 #include "multigrid/cartesian_1d/pde.hpp"
 #include "multigrid/cartesian_1d/run.hpp"
 
 
 double u_exact(double x) {
     return x * (1.0 - x);
-}
-
-double u_guess(double x) {
-    return 0.0;
 }
 
 int main() {
@@ -28,7 +22,7 @@ int main() {
     };
 
     auto results = multigrid::cartesian_1d::run(
-        pde, config, u_guess, u_exact
+        pde, config, u_exact
     );
 
     return 0;
