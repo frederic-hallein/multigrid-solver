@@ -16,7 +16,7 @@ double u_guess(double x) {
 
 int main() {
 
-    Config config("../data/config.yaml");
+    Config config;
     multigrid::cartesian_1d::ModHelmholtz pde {
         0.0,
         Domain1D { 0.0, 1.0 },

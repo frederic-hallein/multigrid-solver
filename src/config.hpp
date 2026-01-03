@@ -11,6 +11,8 @@
 #include "../multigrid/cartesian_1d/cycle.hpp"
 #include "common/logger.hpp"
 
+const std::string CONFIG_PATH = "../data/config.yaml";
+
 class Config {
 public:
     unsigned int sub_int;
@@ -22,8 +24,8 @@ public:
     std::pair<std::string, Cycle> cycle;
     std::pair<std::string, Norm> norm;
 
-    Config(const std::string& filepath) {
-        load_config(filepath);
+    Config() {
+        load_config(CONFIG_PATH);
         log_config_summary();
     }
 
