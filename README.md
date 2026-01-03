@@ -81,17 +81,15 @@ The current codebase provides a flexible and extensible framework for experiment
 
 This project uses the Clang compiler and requires yaml-cpp for configuration parsing.
 
-### 1. Prerequisites
 
-Install Clang and yaml-cpp:
+1. Install Clang and yaml-cpp:
 
 ```sh
 sudo apt install clang libyaml-cpp-dev
 ```
 
-### 2. Clone with Submodules
 
-If you are cloning the repository for the first time, use:
+2. If you are cloning the repository for the first time, use:
 
 ```sh
 git clone --recursive git@github.com:frederic-hallein/multigrid-solver.git
@@ -103,7 +101,7 @@ If you already cloned without `--recursive`, initialize submodules with:
 git submodule update --init --recursive
 ```
 
-### 3. Build the Project and Tests
+3. Build the project and tests
 
 ```sh
 mkdir build
@@ -114,9 +112,8 @@ make
 
 where `<mode>` can be `Debug` or `Release`. For non-development work, it is recommended to use Release mode for optimized builds.
 
-### 4. Setup Configurations
 
-Solver parameters and problem settings are specified in a YAML configuration file (`config.yaml`).
+4. Solver parameters and problem settings are specified in a YAML configuration file (`config.yaml`).
 Below is an example configuration:
 
 ```yaml
@@ -137,26 +134,21 @@ smoother:
 ```
 
 
-### 5. Run the Executable
-
-To run the main executable:
+5. Run the executable
 
 ```sh
 ./main
 ```
 
 
-### Optional: Run the Tests
+6. Run the tests (optional)
 
-To run the unit tests:
 
 ```sh
 ./test/test_<function-name>
 ```
 
-where `<function-name>` the name the functionality being tested.
-
-Or use CTest to run all tests:
+where `<function-name>` the name the functionality being tested. Or use CTest to run all tests:
 
 ```sh
 ctest
@@ -166,12 +158,23 @@ ctest
 
 The project includes Python plotting utilities to visualize solver results.
 
-[TODO: venv + requirements]
-
-### Generate plots
+1. Create a virtual environment:
 
 ```sh
 cd plotting
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+2. Install the required packages:
+
+```sh
+pip install -r requirements.txt
+```
+
+3. Generate the plots:
+
+```sh
 python3 main.py
 ```
 
@@ -207,7 +210,7 @@ We run the multigrid for all three cycles (V, F, and W) using the Red-Black Gaus
 
 ## Results
 
-The project includes data in the `example/` folder with results from different multigrid cycle types (V, W, F cycles) using the RGBS smoother. Comparison plots are already generated and saved in the `plots/example/` directory, overlaying convergence histories and solutions across different cycles. The plots are illustarted below:
+The project includes data in the `example/` folder with results from different multigrid cycle types (V, W, F cycles) using the RGBS smoother. Comparison plots are already generated and saved in the `plots/example/` directory, overlaying convergence histories and solutions across different cycles. The plots are illustrated below:
 
 <p align="center">
   <img src="plotting/plots/example/solution_overlay.svg"alt="Solution comparison" width="600"/>
