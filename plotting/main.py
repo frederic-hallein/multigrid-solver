@@ -44,7 +44,7 @@ def main() -> None:
     plot_solution(df_solution, solution_path, config, u_exact)
     plot_convergence_history(df_conv_history, conv_hist_path, config)
 
-    # plot_example(u_exact)
+    plot_example(u_exact)
 
 if __name__ == "__main__":
     main()

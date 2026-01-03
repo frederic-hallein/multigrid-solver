@@ -26,7 +26,7 @@ def plot_example(u_exact=None) -> None:
     plt.title('Convergence History Comparison', fontweight='bold')
     plt.legend()
     plt.grid(True)
-    plt.savefig("plots/example/convergence_history_overlay.png")
+    plt.savefig("plots/example/convergence_history_overlay.svg")
     plt.close()
 
     # Plot solution overlay
@@ -60,5 +60,5 @@ def plot_example(u_exact=None) -> None:
     plt.title('Solution Comparison', fontweight='bold')
     plt.legend()
     plt.grid(True)
-    plt.savefig("plots/example/solution_overlay.png")
+    plt.savefig("plots/example/solution_overlay.svg")
     plt.close()

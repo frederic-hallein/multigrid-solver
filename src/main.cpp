@@ -31,6 +31,7 @@ double zero_boundary(double x) {
 }
 
 int main() {
+    double sigma = 0.0;
     Domain1D dom{0.0, 1.0};
     BoundaryCond1D bc{zero_boundary, zero_boundary};
 
@@ -52,7 +53,7 @@ int main() {
     }
 
     auto results = multigrid::cartesian_1d::run(
-        f, 0.0, dom, bc, config, u_guess, u_exact
+        f, sigma, dom, bc, config, u_guess, u_exact
     );
 
     if (!results) {
