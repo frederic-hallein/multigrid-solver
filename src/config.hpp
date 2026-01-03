@@ -1,40 +1,129 @@
 #pragma once
 
 #include <unordered_map>
+#include <string>
+#include <yaml-cpp/yaml.h>
 
 #include "../common/smoother_param.hpp"
 #include "../common/type_alias.hpp"
 #include "../common/norm.hpp"
 #include "../multigrid/cartesian_1d/smoother.hpp"
 #include "../multigrid/cartesian_1d/cycle.hpp"
+#include "common/logger.hpp"
 
-inline std::unordered_map<std::string, Smoother> smoother_map{
-    {"J", multigrid::cartesian_1d::jacobi},
-    {"GS", multigrid::cartesian_1d::gauss_seidel},
-    {"RBGS", multigrid::cartesian_1d::red_black_gauss_seidel}
-};
-
-inline std::unordered_map<std::string, Cycle> cycle_map{
-    {"V", multigrid::cartesian_1d::v_cycle},
-    {"F", multigrid::cartesian_1d::f_cycle},
-    {"W", multigrid::cartesian_1d::w_cycle}
-};
-inline std::unordered_map<std::string, Norm> norm_map{
-    {"L2", norm::L2},
-    {"LINF", norm::Linf}
-};
-
-struct Config {
+class Config {
+public:
     unsigned int sub_int;
     unsigned int num_iter;
     double tolerance;
     SmootherParam smoother_param;
-    std::string smoother_name;
-    Smoother smoother;
+    std::pair<std::string, Smoother> smoother;
     double omega;
-    std::string cycle_name;
-    Cycle cycle;
-    std::string norm_name;
-    Norm norm;
-};
+    std::pair<std::string, Cycle> cycle;
+    std::pair<std::string, Norm> norm;
 
+    Config(const std::string& filepath) {
+        load_config(filepath);
+        log_config_summary();
+    }
+
+    void log_config_summary() const {
+        logger::info("---- Configuration Summary ----");
+        logger::info("- sub intervals: {}", sub_int);
+        logger::info("- num iterations: {}", num_iter);
+        logger::info("- tolerance: {}", tolerance);
+        logger::info("- cycle: {}({}, {})", cycle.first, smoother_param.nu_1, smoother_param.nu_2);
+        logger::info("- smoother: {} (omega = {})", smoother.first, omega);
+        logger::info("- norm: {}", norm.first);
+        logger::info("-------------------------------\n");
+    }
+
+private:
+    std::unordered_map<std::string, Smoother> smoother_map{
+        {"J"   , multigrid::cartesian_1d::jacobi},
+        {"GS"  , multigrid::cartesian_1d::gauss_seidel},
+        {"RBGS", multigrid::cartesian_1d::red_black_gauss_seidel}
+    };
+
+    std::unordered_map<std::string, Cycle> cycle_map{
+        {"V", multigrid::cartesian_1d::v_cycle},
+        {"F", multigrid::cartesian_1d::f_cycle},
+        {"W", multigrid::cartesian_1d::w_cycle}
+    };
+
+    std::unordered_map<std::string, Norm> norm_map{
+        {"L2"  , norm::L2},
+        {"LINF", norm::Linf}
+    };
+
+    void load_config(const std::string& filepath) {
+        try {
+            YAML::Node yaml = YAML::LoadFile(filepath);
+
+            if (!yaml["grid"] || !yaml["grid"]["sub_intervals"]) {
+                throw std::runtime_error("Missing parameter: grid.sub_intervals");
+            }
+            if (!yaml["solver"] || !yaml["solver"]["num_iterations"]) {
+                throw std::runtime_error("Missing parameter: solver.num_iterations");
+            }
+            if (!yaml["solver"] || !yaml["solver"]["tolerance"]) {
+                throw std::runtime_error("Missing parameter: solver.tolerance");
+            }
+            if (!yaml["solver"] || !yaml["solver"]["smoother"]) {
+                throw std::runtime_error("Missing parameter: solver.smoother");
+            }
+            if (!yaml["solver"] || !yaml["solver"]["cycle"]) {
+                throw std::runtime_error("Missing parameter: solver.cycle");
+            }
+            if (!yaml["solver"] || !yaml["solver"]["norm"]) {
+                throw std::runtime_error("Missing parameter: solver.norm");
+            }
+            if (!yaml["solver"] || !yaml["solver"]["omega"]) {
+                throw std::runtime_error("Missing parameter: solver.omega");
+            }
+            if (!yaml["smoother"] || !yaml["smoother"]["pre_iterations"]) {
+                throw std::runtime_error("Missing parameter: smoother.pre_iterations");
+            }
+            if (!yaml["smoother"] || !yaml["smoother"]["post_iterations"]) {
+                throw std::runtime_error("Missing parameter: smoother.post_iterations");
+            }
+
+            sub_int = yaml["grid"]["sub_intervals"].as<unsigned int>();
+            num_iter = yaml["solver"]["num_iterations"].as<unsigned int>();
+            tolerance = yaml["solver"]["tolerance"].as<double>();
+
+            std::string smoother_key = yaml["solver"]["smoother"].as<std::string>();
+            auto s_it = smoother_map.find(smoother_key);
+            if (s_it != smoother_map.end()) {
+                smoother = std::make_pair(smoother_key, s_it->second);
+            } else {
+                logger::warning("Unknown smoother '{}', using default: J.", smoother_key);
+                smoother = std::make_pair("J", smoother_map.at("J"));
+            }
+
+            std::string cycle_key = yaml["solver"]["cycle"].as<std::string>();
+            auto c_it = cycle_map.find(cycle_key);
+            if (c_it != cycle_map.end()) {
+                cycle = std::make_pair(cycle_key, c_it->second);
+            } else {
+                logger::warning("Unknown cycle '{}', using default: V.", cycle_key);
+                cycle = std::make_pair("V", cycle_map.at("V"));
+            }
+
+            std::string norm_key = yaml["solver"]["norm"].as<std::string>();
+            auto n_it = norm_map.find(norm_key);
+            if (n_it != norm_map.end()) {
+                norm = std::make_pair(norm_key, n_it->second);
+            } else {
+                logger::warning("Unknown norm '{}', using default: L2.", norm_key);
+                norm = std::make_pair("L2", norm_map.at("L2"));
+            }
+
+            omega = yaml["solver"]["omega"].as<double>();
+            smoother_param.nu_1 = yaml["smoother"]["pre_iterations"].as<unsigned int>();
+            smoother_param.nu_2 = yaml["smoother"]["post_iterations"].as<unsigned int>();
+        } catch (const YAML::Exception& e) {
+            throw std::runtime_error("Failed to load config file " + filepath + ": " + e.what());
+        }
+    }
+};

@@ -13,6 +13,7 @@
 #include "../../common/smoother_param.hpp"
 #include "../../common/norm.hpp"
 
+#include "pde.hpp"
 #include "smoother.hpp"
 #include "cycle.hpp"
 #include "init_grids.hpp"
@@ -25,11 +26,8 @@ namespace multigrid::cartesian_1d {
     };
 
     std::optional<MG1DResults> run(
-        const Func1D& rhs_f,
-        double sigma,
-        Domain1D dom,
-        const BoundaryCond1D& bc,
-        Config config,
+        const ModHelmholtz& pde,
+        const Config& config,
         const Func1D& u_guess = [](double) { return 0.0; },
         const std::optional<Func1D>& u_exact = std::nullopt
     );
