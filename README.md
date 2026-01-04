@@ -208,7 +208,7 @@ $$
 u_{\text{exact}}(x) = x(1 - x)
 $$
 
-We run the multigrid for all three cycles (V, F, and W) using the Red-Black Gauss-Seidel smoother with weight parameter $\omega = 2/3$. This setup uses a grid with 64 sub-intervals (grid spacing $h = 1/64$), the $L_2$ norm for the resiual calculation, a maximum of 100 iterations, and a convergence tolerance of $1 \times 10^{-10}$.
+We run the multigrid for all three cycles (V, F, and W) using the weighted Red-Black Gauss-Seidel smoother (3 iterations pre- and post-smoothing) with weight parameter $\omega = 2/3$. This setup uses a grid with 64 sub-intervals (grid spacing $h = 1/64$), the $L_2$ norm for the resiual calculation, a maximum of 100 iterations, and a convergence tolerance of $1 \times 10^{-10}$.
 
 
 ## Results
@@ -225,10 +225,39 @@ The project includes data in the `example/` folder with results from different m
 </p>
 <p align="center"><b>Figure 4:</b> This plot shows the L2 norm of the residual (on a logarithmic scale) versus iteration number for each cycle type. The V-cycle (V33_RGBS) requires almost twice as many iterations to converge compared to the F and W cycles, with the F-cycle achieving convergence in the fewest steps — only 4 iterations. </p>
 
-**Note**: To regenerate these plots, uncomment `plot_example(u_exact)` in `plotting/main.py` and run the python script again.
+<div align="center">
 
-[TODO: add table of timing and iterations for each cycle]
+<table>
+  <thead>
+    <tr>
+      <th>Cycle Type</th>
+      <th>Iterations</th>
+      <th>Time (ms)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>V</td>
+      <td>8</td>
+      <td>0.037</td>
+    </tr>
+    <tr>
+      <td>W</td>
+      <td>5</td>
+      <td>0.1</td>
+    </tr>
+    <tr>
+      <td>F</td>
+      <td>4</td>
+      <td>0.047</td>
+    </tr>
+  </tbody>
+</table>
+
+<b>Table 1:</b> Comparison of multigrid cycle types. The F-cycle converges fastest for this problem, while the V-cycle requires the most iterations.
+</div>
+
+**Note**: To regenerate these plots, uncomment `plot_example(u_exact)` in `plotting/main.py` and run the python script again.
 
 ## Discussion
 
-[TODO: explain the differences]

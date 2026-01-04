@@ -5,7 +5,7 @@ solver:
   num_iterations: 100
   tolerance: 1.0e-10
   smoother: RBGS
-  cycle: W
+  cycle: V
   norm: L2
   omega: 0.667
 
