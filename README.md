@@ -261,3 +261,12 @@ The project includes data in the `example/` folder with results from different m
 
 ## Discussion
 
+The results show that all three multigrid cycles (V, W, and F) successfully solve the 1D Poisson problem, with the F-cycle converging in the fewest iterations and the V-cycle requiring the most. This behavior is expected, as the F- and W-cycles perform additional coarse-grid corrections, which can accelerate convergence for certain problems. The numerical solutions closely match the exact solution, indicating that the implementation works as intended for this simple test case.
+
+However, to fully assess the robustness and reliability of the solver, it should be tested on more challenging and non-trivial problems, such as equations with variable coefficients, more complex source terms, or irregular domains. Additional validation is also recommended for cases with slower convergence or potential numerical instability.
+
+Possible extensions to the codebase include supporting other boundary conditions (e.g., Neumann) and extending the solver to handle 2D problems in various coordinate systems, such as Cartesian and polar coordinates. These enhancements would broaden the applicability of the solver to a wider range of scientific and engineering problems.
+
+## Conclusion
+
+This project demonstrates that multigrid methods are highly effective for solving 1D elliptic PDEs, achieving rapid convergence even for fine grids. The implementation works as intended for the tested example, and the results highlight the advantages of different cycle types. Future work should focus on extending the solver to more complex problems and higher dimensions to further validate its robustness and broaden its applicability.
