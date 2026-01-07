@@ -8,11 +8,5 @@ struct BoundaryCond1D {
 
 struct BoundaryCond2D {
     Func2D left, right;
-    Func2D down, up;
-};
-
-struct BoundaryCond3D {
-    Func2D left, right;
-    Func2D down, up;
-    Func2D forw, back;
+    Func2D bottom, top;
 };

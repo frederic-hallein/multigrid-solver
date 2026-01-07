@@ -27,6 +27,9 @@ namespace multigrid::cartesian_1d {
         const SmootherParam& smoother_param
     );
 
+    /*
+    TODO
+     */
     void f_cycle(
         std::vector<Grid>& grids,
         std::size_t level,
@@ -37,6 +40,9 @@ namespace multigrid::cartesian_1d {
         const SmootherParam& smoother_param
     );
 
+    /*
+    TODO
+     */
     void w_cycle(
         std::vector<Grid>& grids,
         std::size_t level,
