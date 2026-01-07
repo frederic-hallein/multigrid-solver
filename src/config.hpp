@@ -7,21 +7,22 @@
 #include "../common/smoother_param.hpp"
 #include "../common/type_alias.hpp"
 #include "../common/norm.hpp"
-#include "../multigrid/cartesian_1d/smoother.hpp"
-#include "../multigrid/cartesian_1d/cycle.hpp"
+#include "../multigrid/smoother.hpp"
+#include "../multigrid/cycle.hpp"
 #include "common/logger.hpp"
 
 const std::string CONFIG_PATH = "../data/config.yaml";
 
 class Config {
 public:
+    unsigned int dim;
     unsigned int sub_int;
     unsigned int num_iter;
     double tolerance;
     SmootherParam smoother_param;
     std::pair<std::string, Smoother> smoother;
     double omega;
-    std::pair<std::string, Cycle> cycle;
+    std::pair<std::string, Cycle<Grid1D>> cycle; // std::pair<std::string, std::variant<Cycle<Grid1D>, Cycle<Grid2D>>> cycle;
     std::pair<std::string, Norm> norm;
 
     Config() {
@@ -42,15 +43,21 @@ public:
 
 private:
     std::unordered_map<std::string, Smoother> smoother_map{
-        {"J"   , multigrid::cartesian_1d::jacobi},
-        {"GS"  , multigrid::cartesian_1d::gauss_seidel},
-        {"RBGS", multigrid::cartesian_1d::red_black_gauss_seidel}
+        {"J"   , multigrid::cart_1d::jacobi},
+        {"GS"  , multigrid::cart_1d::gauss_seidel},
+        {"RBGS", multigrid::cart_1d::red_black_gauss_seidel}
     };
 
-    std::unordered_map<std::string, Cycle> cycle_map{
-        {"V", multigrid::cartesian_1d::v_cycle},
-        {"F", multigrid::cartesian_1d::f_cycle},
-        {"W", multigrid::cartesian_1d::w_cycle}
+    std::unordered_map<std::string, Cycle<Grid1D>> cycle_map_1d{
+        {"V", multigrid::v_cycle},
+        {"F", multigrid::f_cycle},
+        {"W", multigrid::w_cycle}
+    };
+
+    std::unordered_map<std::string, Cycle<Grid2D>> cycle_map_2d{
+        // {"V", multigrid::v_cycle},
+        // {"F", multigrid::f_cycle},
+        // {"W", multigrid::w_cycle}
     };
 
     std::unordered_map<std::string, Norm> norm_map{
@@ -62,6 +69,9 @@ private:
         try {
             YAML::Node yaml = YAML::LoadFile(filepath);
 
+            if (!yaml["grid"] || !yaml["grid"]["dim"]) {
+                throw std::runtime_error("Missing parameter: grid.dim");
+            }
             if (!yaml["grid"] || !yaml["grid"]["sub_intervals"]) {
                 throw std::runtime_error("Missing parameter: grid.sub_intervals");
             }
@@ -90,6 +100,7 @@ private:
                 throw std::runtime_error("Missing parameter: smoother.post_iterations");
             }
 
+            dim = yaml["grid"]["dim"].as<unsigned int>();
             sub_int = yaml["grid"]["sub_intervals"].as<unsigned int>();
             num_iter = yaml["solver"]["num_iterations"].as<unsigned int>();
             tolerance = yaml["solver"]["tolerance"].as<double>();
@@ -104,12 +115,24 @@ private:
             }
 
             std::string cycle_key = yaml["solver"]["cycle"].as<std::string>();
-            auto c_it = cycle_map.find(cycle_key);
-            if (c_it != cycle_map.end()) {
-                cycle = std::make_pair(cycle_key, c_it->second);
-            } else {
-                logger::warning("Unknown cycle '{}', using default: V.", cycle_key);
-                cycle = std::make_pair("V", cycle_map.at("V"));
+            if (dim == 1) {
+                auto c_it = cycle_map_1d.find(cycle_key);
+                if (c_it != cycle_map_1d.end()) {
+                    cycle = std::make_pair(cycle_key, c_it->second);
+                } else {
+                    logger::warning("Unknown cycle '{}', using default: V.", cycle_key);
+                    cycle = std::make_pair("V", cycle_map_1d.at("V"));
+                }
+            // } else if (dim == 2) {
+            //     auto c_it = cycle_map_2d.find(cycle_key);
+            //     if (c_it != cycle_map_2d.end()) {
+            //         cycle = std::make_pair(cycle_key, c_it->second);
+            //     } else {
+            //         logger::warning("Unknown cycle '{}', using default: V.", cycle_key);
+            //         // cycle = std::make_pair("V", cycle_map_2d.at("V"));
+            //     }
+            // } else {
+            //     throw std::runtime_error("Unsupported grid dimension: " + std::to_string(dim));
             }
 
             std::string norm_key = yaml["solver"]["norm"].as<std::string>();

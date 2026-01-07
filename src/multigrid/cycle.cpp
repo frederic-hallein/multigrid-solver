@@ -1,7 +1,8 @@
 #include "cycle.hpp"
-namespace multigrid::cartesian_1d {
+
+namespace multigrid {
     void v_cycle(
-        std::vector<Grid>& grids,
+        std::vector<Grid1D>& grids,
         std::size_t level,
         double h,
         double sigma,
@@ -43,7 +44,7 @@ namespace multigrid::cartesian_1d {
     }
 
     void f_cycle(
-        std::vector<Grid>& grids,
+        std::vector<Grid1D>& grids,
         std::size_t level,
         double h,
         double sigma,
@@ -97,7 +98,7 @@ namespace multigrid::cartesian_1d {
     }
 
     void w_cycle(
-        std::vector<Grid>& grids,
+        std::vector<Grid1D>& grids,
         std::size_t level,
         double h,
         double sigma,

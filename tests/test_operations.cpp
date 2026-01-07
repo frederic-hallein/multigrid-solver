@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "multigrid/cartesian_1d/operations.hpp"
+#include "multigrid/operations.hpp"
 
 TEST(multigrid_operations, compute_residual) {
     // For u = x(1-x) on [0,1], f = -u'' + 0*u = 2
@@ -10,7 +10,7 @@ TEST(multigrid_operations, compute_residual) {
     std::vector<double> v = {0.0, 0.1875, 0.25, 0.1875, 0.0};  // u = x(1-x)
     std::vector<double> f = {0.0, 2.0, 2.0, 2.0, 0.0};
 
-    std::vector<double> r = multigrid::cartesian_1d::compute_residual(v, f, h, sigma);
+    std::vector<double> r = multigrid::compute_residual(v, f, h, sigma);
 
     // Expected residual: r = f - A*v
     // A*v = (-v[i-1] + 2*v[i] - v[i+1]) / h²
@@ -28,7 +28,7 @@ TEST(multigrid_operations, restrict_residual) {
     // Coarse grid: 5 points (indices 0-4)
     std::vector<double> residual = {0.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 0.0};
 
-    std::vector<double> coarse_residual = multigrid::cartesian_1d::restrict_residual(residual);
+    std::vector<double> coarse_residual = multigrid::restrict_residual(residual);
 
     // Expected size: 9 / 2 + 1 = 5
     EXPECT_EQ(coarse_residual.size(), 5);
@@ -58,7 +58,7 @@ TEST(multigrid_operations, prolongate) {
     // Fine grid: 9 points (indices 0-8)
     std::vector<double> v2h = {0.0, 1.0, 2.0, 1.0, 0.0};
 
-    std::vector<double> vh = multigrid::cartesian_1d::prolongate(v2h);
+    std::vector<double> vh = multigrid::prolongate(v2h);
 
     // Expected size: 5 * 2 - 1 = 9
     EXPECT_EQ(vh.size(), 9);
@@ -89,10 +89,10 @@ TEST(multigrid_operations, prolongate_restrict_roundtrip) {
     std::vector<double> original = {0.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 0.0};
 
     // Restrict fine to coarse
-    std::vector<double> coarse = multigrid::cartesian_1d::restrict_residual(original);
+    std::vector<double> coarse = multigrid::restrict_residual(original);
 
     // Prolongate coarse back to fine
-    std::vector<double> recovered = multigrid::cartesian_1d::prolongate(coarse);
+    std::vector<double> recovered = multigrid::prolongate(coarse);
 
     // Should have same size
     EXPECT_EQ(recovered.size(), original.size());
@@ -109,7 +109,7 @@ TEST(multigrid_operations, direct_solve) {
     double h = 0.25;
     double sigma = 1.0;
 
-    std::vector<double> x = multigrid::cartesian_1d::direct_solve(f, h, sigma);
+    std::vector<double> x = multigrid::direct_solve(f, h, sigma);
 
     // Solution should be finite and satisfy boundary conditions
     EXPECT_NEAR(x[0], 0.0, 1e-10);
@@ -128,7 +128,7 @@ TEST(multigrid_operations, direct_solve_zero_rhs) {
     double h = 0.25;
     double sigma = 1.0;
 
-    std::vector<double> x = multigrid::cartesian_1d::direct_solve(f, h, sigma);
+    std::vector<double> x = multigrid::direct_solve(f, h, sigma);
 
     for (std::size_t i = 0; i < x.size(); ++i) {
         EXPECT_NEAR(x[i], 0.0, 1e-10);

@@ -1,5 +1,5 @@
-#include "multigrid/cartesian_1d/pde.hpp"
-#include "multigrid/cartesian_1d/run.hpp"
+#include "multigrid/pde.hpp"
+#include "multigrid/run.hpp"
 
 // #include "multigrid/cartesian_2d/pde.hpp"
 // #include "multigrid/cartesian_2d/run.hpp"
@@ -17,7 +17,7 @@ double u_exact(double x) {
 int main() {
 
     Config config;
-    multigrid::cartesian_1d::ModHelmholtz pde {
+    multigrid::ModHelmholtz pde {
         0.0,
         Domain1D { 0.0, 1.0 },
         BoundaryCond1D {
@@ -27,7 +27,7 @@ int main() {
         [](double) { return 2.0; }
     };
 
-    auto results = multigrid::cartesian_1d::run(
+    auto results = multigrid::run(
         pde, config, u_exact
     );
 

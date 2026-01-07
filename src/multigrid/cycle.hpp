@@ -2,12 +2,12 @@
 
 #include <vector>
 
-#include "../../common/logger.hpp"
-#include "../../common/type_alias.hpp"
-#include "../../common/smoother_param.hpp"
+#include "../common/logger.hpp"
+#include "../common/type_alias.hpp"
+#include "../common/smoother_param.hpp"
 
 #include "operations.hpp"
-namespace multigrid::cartesian_1d {
+namespace multigrid {
     /*
     v_cycle(grids, 0, ...)
       └─> V(grids, 1, ...)
@@ -18,7 +18,7 @@ namespace multigrid::cartesian_1d {
       <-- prolongate, correct, post-smooth (level 0)
     */
     void v_cycle(
-        std::vector<Grid>& grids,
+        std::vector<Grid1D>& grids,
         std::size_t level,
         double h,
         double sigma,
@@ -31,7 +31,7 @@ namespace multigrid::cartesian_1d {
     TODO
      */
     void f_cycle(
-        std::vector<Grid>& grids,
+        std::vector<Grid1D>& grids,
         std::size_t level,
         double h,
         double sigma,
@@ -44,7 +44,7 @@ namespace multigrid::cartesian_1d {
     TODO
      */
     void w_cycle(
-        std::vector<Grid>& grids,
+        std::vector<Grid1D>& grids,
         std::size_t level,
         double h,
         double sigma,

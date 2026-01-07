@@ -3,7 +3,7 @@
 #include <cmath>
 #include <vector>
 
-namespace multigrid::cartesian_1d {
+namespace multigrid {
     std::vector<double> compute_residual(
         const std::vector<double>& v,
         const std::vector<double>& f,

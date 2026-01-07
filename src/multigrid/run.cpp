@@ -1,6 +1,6 @@
 #include "run.hpp"
 
-namespace multigrid::cartesian_1d {
+namespace multigrid {
     std::optional<MG1DResults> run(
         const ModHelmholtz& pde,
         const Config& config,
@@ -19,7 +19,7 @@ namespace multigrid::cartesian_1d {
         }
 
         MG1DResults results;
-        std::vector<Grid> grids = init_grids(pde.f, u_guess, pde.dom, pde.bc, config.sub_int);
+        std::vector<Grid1D> grids = init_grids(pde.f, u_guess, pde.dom, pde.bc, config.sub_int);
         double h = (pde.dom.x_max - pde.dom.x_min) / config.sub_int;
 
         logger::info("Running multigrid...");

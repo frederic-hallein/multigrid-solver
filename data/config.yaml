@@ -1,4 +1,5 @@
 grid:
+  dim: 1
   sub_intervals: 64
 
 solver:
