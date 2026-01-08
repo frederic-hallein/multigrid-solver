@@ -1,3 +1,4 @@
+#include "../common/logger.hpp"
 #include "init_grids.hpp"
 
 namespace multigrid {

@@ -4,12 +4,13 @@
 #include <string>
 #include <yaml-cpp/yaml.h>
 
-#include "../common/smoother_param.hpp"
-#include "../common/type_alias.hpp"
-#include "../common/norm.hpp"
-#include "../multigrid/smoother.hpp"
-#include "../multigrid/cycle.hpp"
 #include "common/logger.hpp"
+#include "multigrid/grid.hpp"
+#include "common/type_alias.hpp"
+#include "common/norm.hpp"
+#include "common/smoother_param.hpp"
+#include "multigrid/smoother.hpp"
+#include "multigrid/cycle.hpp"
 
 const std::string CONFIG_PATH = "../data/config.yaml";
 

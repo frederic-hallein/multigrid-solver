@@ -2,8 +2,6 @@
 
 #include <vector>
 
-#include "grid.hpp"
-
 namespace {
     inline double helmholtz_stencil_1d(
         double v_x_neg, double v_x_pos,

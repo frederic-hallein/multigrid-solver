@@ -8,7 +8,6 @@
 
 #include "type_alias.hpp"
 #include "domain.hpp"
-#include "norm.hpp"
 
 inline void save_grid_points(
     const std::string& filename,

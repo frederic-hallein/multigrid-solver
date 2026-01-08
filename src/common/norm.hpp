@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <cmath>
-#include <numeric>
+#include <algorithm>
 
 namespace norm {
     inline double Lp(const std::vector<double>& v, double p) {

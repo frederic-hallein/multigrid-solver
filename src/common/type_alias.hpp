@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "smoother_param.hpp"
-#include "../multigrid/grid.hpp"
 
 using Func1D = std::function<double(double)>;
 using Func2D = std::function<double(double, double)>;

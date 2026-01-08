@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../common/logger.hpp"
 #include "../common/type_alias.hpp"
 #include "../common/domain.hpp"
 #include "../common/boundary_condition.hpp"

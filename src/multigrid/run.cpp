@@ -1,3 +1,6 @@
+#include "../common/io.hpp"
+#include "init_grids.hpp"
+#include "operations.hpp"
 #include "run.hpp"
 
 namespace multigrid {

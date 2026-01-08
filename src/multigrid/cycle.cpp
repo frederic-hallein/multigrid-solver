@@ -1,4 +1,6 @@
+#include "../common/logger.hpp"
 #include "cycle.hpp"
+#include "operations.hpp"
 
 namespace multigrid {
     void v_cycle(

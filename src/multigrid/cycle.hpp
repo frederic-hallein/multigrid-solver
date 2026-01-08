@@ -1,12 +1,10 @@
 #pragma once
 
-#include <vector>
 
-#include "../common/logger.hpp"
 #include "../common/type_alias.hpp"
 #include "../common/smoother_param.hpp"
+#include "grid.hpp"
 
-#include "operations.hpp"
 namespace multigrid {
     /*
     v_cycle(grids, 0, ...)
