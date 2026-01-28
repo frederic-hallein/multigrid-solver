@@ -17,8 +17,8 @@ The book [*A Multigrid Tutorial, 2nd Edition*](https://www.researchgate.net/publ
 
 ## Table of Content
 
-- [Overview](#overview)
-  - [Key Features](#key-features)
+- [Technical Overview](#technical-overview)
+- [Key Features](#key-features)
 - [Build & Test](#build--test)
   - [Prerequisites](#1-prerequisites)
   - [Clone with Submodules](#2-clone-with-submodules)
@@ -31,8 +31,9 @@ The book [*A Multigrid Tutorial, 2nd Edition*](https://www.researchgate.net/publ
 - [Example Problem Setup](#example-problem-setup)
 - [Results](#results)
 - [Discussion](#discussion)
+- [Conclusion](#conclusion)
 
-## Overview
+## Technical Overview
 
 Multigrid is a highly efficient numerical technique for solving large systems of linear equations that arise from the discretization of partial differential equations (PDEs). Unlike traditional iterative solvers, which can become slow for fine grids due to slow error reduction, multigrid methods address errors at multiple spatial scales by operating on a hierarchy of grids.
 
@@ -69,7 +70,7 @@ Multigrid methods employ different *cycles* to control how the algorithm moves b
 By combining these steps, multigrid methods achieve rapid convergence rates that are often independent of the grid size, making them ideal for large-scale scientific and engineering simulations.
 
 
-### Key Features
+## Key Features
 
 The current codebase provides a flexible and extensible framework for experimenting with multigrid methods and includes the following features:
 
