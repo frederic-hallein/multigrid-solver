@@ -2,7 +2,7 @@
 #include <cmath>
 #include <numeric>
 
-#include "../../common/logger.hpp"
+#include "../common/logger.hpp"
 #include "solver_old.hpp"
 
 namespace solver {
