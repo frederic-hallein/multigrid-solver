@@ -19,15 +19,10 @@ The book [*A Multigrid Tutorial, 2nd Edition*](https://www.researchgate.net/publ
 
 - [Technical Overview](#technical-overview)
 - [Key Features](#key-features)
-- [Build & Test](#build--test)
-  - [Prerequisites](#1-prerequisites)
-  - [Clone with Submodules](#2-clone-with-submodules)
-  - [Build the Project and Tests](#3-build-the-project-and-tests)
-  - [Setup Configurations](#4-setup-configurations)
-  - [Run the Executable](#5-run-the-executable)
-  - [Run the Tests](#optional-run-the-tests)
+- [Build](#build)
+- [Usage](#usage)
 - [Plotting Results](#plotting-results)
-  - [Generate Plots](#generate-plots)
+- [Tests](#tests)
 - [Example Problem Setup](#example-problem-setup)
 - [Results](#results)
 - [Discussion](#discussion)
@@ -81,22 +76,30 @@ The current codebase provides a flexible and extensible framework for experiment
 - **Flexible Configuration**: YAML-based configuration for solver parameters
 - **Testing**: Comprehensive unit tests
 
-## Build & Test
+## Build
 
-This project uses the Clang compiler and requires yaml-cpp for configuration parsing.
+The following dependencies are required:
 
+- C++20 compatible compiler (GCC ≥ 11 or Clang ≥ 13)
+- CMake ≥ 3.28.3
+- yaml-cpp (YAML parser for C++)
+- GoogleTest (included as a submodule for unit testing)
 
-1. Install Clang and yaml-cpp:
+Install the required packages on Ubuntu:
 
 ```sh
-sudo apt install clang libyaml-cpp-dev
+sudo apt update
+sudo apt install clang cmake libyaml-cpp-dev
 ```
 
+To build the project:
 
-2. If you are cloning the repository for the first time, use:
+
+1. Clone the repository (with submodules):
 
 ```sh
 git clone --recursive git@github.com:frederic-hallein/multigrid-solver.git
+cd multigrid-solver
 ```
 
 If you already cloned without `--recursive`, initialize submodules with:
@@ -105,20 +108,23 @@ If you already cloned without `--recursive`, initialize submodules with:
 git submodule update --init --recursive
 ```
 
-3. Build the project and tests
+2. Create a build directory and configure the project:
 
 ```sh
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=<mode> -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ ..
-make
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
 ```
 
-where `<mode>` can be `Debug` or `Release`. For non-development work, it is recommended to use Release mode for optimized builds.
+3. Build the main executable and tests:
+
+```sh
+cmake --build .
+```
 
 
-4. Solver parameters and problem settings are specified in a YAML configuration file (`config.yaml`).
-Below is an example configuration:
+## Usage
+
+Solver parameters and problem setup are specified in `config.yaml`. Example:
 
 ```yaml
 grid:
@@ -138,31 +144,17 @@ smoother:
 ```
 
 
-5. Run the executable
+To run the solver:
 
 ```sh
 ./main
 ```
 
-
-6. Run the tests (optional)
-
-
-```sh
-./test/test_<function-name>
-```
-
-where `<function-name>` the name the functionality being tested. Or use CTest to run all tests:
-
-```sh
-ctest
-```
-
 ## Plotting Results
 
-The project includes Python plotting utilities to visualize solver results.
+Python utilities are provided for result visualization.
 
-1. Create a virtual environment:
+1. Create a virtual environment and activate it:
 
 ```sh
 cd plotting
@@ -182,7 +174,25 @@ pip install -r requirements.txt
 python3 main.py
 ```
 
-This generates solution and convergence history plots in the `plots/` directory.
+Plots are saved in the `plots/` directory.
+
+
+## Tests
+
+All tests use the GoogleTest framework. Unit tests are built automatically and placed in the `\test` folder. To run all tests:
+
+```sh
+ctest
+```
+
+Or run individual test binaries directly:
+
+```sh
+./test/test_<functionality>
+```
+
+
+
 
 
 ## Example Problem Setup
