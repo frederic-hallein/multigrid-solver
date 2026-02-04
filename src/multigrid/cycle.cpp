@@ -35,7 +35,7 @@ namespace multigrid {
 
         logger::debug("Prolongating and correcting (level = {})", level);
         std::vector<double> correction = prolongate(grids[level + 1].v);
-        for (size_t i = 0; i < grid.v.size(); ++i) {
+        for (std::size_t i = 0; i < grid.v.size(); ++i) {
             grid.v[i] += correction[i];
         }
 
@@ -75,7 +75,7 @@ namespace multigrid {
 
 
         std::vector<double> correction = prolongate(grids[level + 1].v);
-        for (size_t i = 0; i < grid.v.size(); ++i) {
+        for (std::size_t i = 0; i < grid.v.size(); ++i) {
             grid.v[i] += correction[i];
         }
 
@@ -89,7 +89,7 @@ namespace multigrid {
         v_cycle(grids, level + 1, 2 * h, sigma, omega, smoother, smoother_param);
 
         correction = prolongate(grids[level + 1].v);
-        for (size_t i = 0; i < grid.v.size(); ++i) {
+        for (std::size_t i = 0; i < grid.v.size(); ++i) {
             grid.v[i] += correction[i];
         }
 
@@ -129,7 +129,7 @@ namespace multigrid {
 
         logger::debug("Prolongating and correcting (level = {})", level);
         std::vector<double> correction = prolongate(grids[level + 1].v);
-        for (size_t i = 0; i < grid.v.size(); ++i) {
+        for (std::size_t i = 0; i < grid.v.size(); ++i) {
             grid.v[i] += correction[i];
         }
 
@@ -143,7 +143,7 @@ namespace multigrid {
         w_cycle(grids, level + 1, 2 * h, sigma, omega, smoother, smoother_param);
 
         correction = prolongate(grids[level + 1].v);
-        for (size_t i = 0; i < grid.v.size(); ++i) {
+        for (std::size_t i = 0; i < grid.v.size(); ++i) {
             grid.v[i] += correction[i];
         }
     }

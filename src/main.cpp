@@ -17,7 +17,7 @@ double u_exact(double x) {
 int main() {
 
     Config config;
-    multigrid::ModHelmholtz pde {
+    ModHelmholtz1D pde {
         0.0,
         Domain1D { 0.0, 1.0 },
         BoundaryCond1D {
@@ -27,11 +27,9 @@ int main() {
         [](double) { return 2.0; }
     };
 
-    auto results = multigrid::run(
-        pde, config, u_exact
-    );
+    auto results = multigrid::run(pde, config, u_exact);
 
-    // multigrid::cartesian_2d::ModHelmholtz pde {
+    // multigrid::ModHelmholtz pde {
     //     0.0,
     //     Domain2D {
     //         0.0, 1.0,

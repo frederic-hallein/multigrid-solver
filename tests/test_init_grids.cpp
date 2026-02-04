@@ -28,8 +28,9 @@ TEST(multigrid, init_grids_1d) {
     EXPECT_EQ(grids[3].f.size(), 3);
 }
 
-TEST(multigrid, init_grids_2d) {
-    unsigned int n = 16;
+TEST(multigrid, init_grids_2d_square) {
+    unsigned int n_x = 16;
+    unsigned int n_y = 16;
     auto rhs       = [](double, double) { return 1.0; };
     auto u_guess   = [](double, double) { return 0.0; };
     auto bc_top    = [](double, double) { return 1.0; };
@@ -39,9 +40,9 @@ TEST(multigrid, init_grids_2d) {
     Domain2D dom{0.0, 1.0, 0.0, 1.0};
     BoundaryCond2D bc{bc_left, bc_right, bc_bottom, bc_top};
 
-    double h_x = (dom.x_max - dom.x_min) / n;
-    double h_y = (dom.y_max - dom.y_min) / n;
-    auto grids = multigrid::init_grids(rhs, u_guess, dom, bc, n, h_x, h_y);
+    double h_x = (dom.x_max - dom.x_min) / n_x;
+    double h_y = (dom.y_max - dom.y_min) / n_y;
+    auto grids = multigrid::init_grids(rhs, u_guess, dom, bc, n_x, n_y, h_x, h_y);
 
     ASSERT_EQ(grids.size(), 4);
 
@@ -65,19 +66,19 @@ TEST(multigrid, init_grids_2d) {
     EXPECT_EQ(grids[3].f.size(),    3);
     EXPECT_EQ(grids[3].f[0].size(), 3);
 
-    for (size_t level = 0; level < grids.size(); ++level) {
+    for (std::size_t level = 0; level < grids.size(); ++level) {
         EXPECT_EQ(grids[level].v.size(), grids[level].v[0].size());
         EXPECT_EQ(grids[level].f.size(), grids[level].f[0].size());
     }
 
-    size_t n_level = grids[0].v.size();
+    std::size_t n_level = grids[0].v.size();
 
-    for (size_t i = 1; i < n_level - 1; ++i) {
+    for (std::size_t i = 1; i < n_level - 1; ++i) {
         EXPECT_EQ(grids[0].v[i][0], 2.0);
         EXPECT_EQ(grids[0].v[i][n_level-1], 1.0);
     }
 
-    for (size_t j = 1; j < n_level - 1; ++j) {
+    for (std::size_t j = 1; j < n_level - 1; ++j) {
         EXPECT_EQ(grids[0].v[0][j], 3.0);
         EXPECT_EQ(grids[0].v[n_level-1][j], 4.0);
     }
@@ -86,4 +87,56 @@ TEST(multigrid, init_grids_2d) {
     EXPECT_EQ(grids[0].v[n_level - 1][0], 0.5 * (4.0 + 2.0));
     EXPECT_EQ(grids[0].v[0][n_level - 1], 0.5 * (3.0 + 1.0));
     EXPECT_EQ(grids[0].v[n_level - 1][n_level - 1], 0.5 * (4.0 + 1.0));
+}
+
+TEST(multigrid, init_grids_2d_non_square) {
+    unsigned int n_x = 16;
+    unsigned int n_y = 8;
+    auto rhs       = [](double, double) { return 1.0; };
+    auto u_guess   = [](double, double) { return 0.0; };
+    auto bc_top    = [](double, double) { return 1.0; };
+    auto bc_bottom = [](double, double) { return 2.0; };
+    auto bc_left   = [](double, double) { return 3.0; };
+    auto bc_right  = [](double, double) { return 4.0; };
+    Domain2D dom{0.0, 1.0, 0.0, 0.5};
+    BoundaryCond2D bc{bc_left, bc_right, bc_bottom, bc_top};
+
+    double h_x = (dom.x_max - dom.x_min) / n_x;
+    double h_y = (dom.y_max - dom.y_min) / n_y;
+    auto grids = multigrid::init_grids(rhs, u_guess, dom, bc, n_x, n_y, h_x, h_y);
+
+    ASSERT_EQ(grids.size(), 3);
+
+    EXPECT_EQ(grids[0].v.size(),    17);
+    EXPECT_EQ(grids[0].v[0].size(), 9);
+    EXPECT_EQ(grids[0].f.size(),    17);
+    EXPECT_EQ(grids[0].f[0].size(), 9);
+
+    EXPECT_EQ(grids[1].v.size(),    9);
+    EXPECT_EQ(grids[1].v[0].size(), 5);
+    EXPECT_EQ(grids[1].f.size(),    9);
+    EXPECT_EQ(grids[1].f[0].size(), 5);
+
+    EXPECT_EQ(grids[2].v.size(),    5);
+    EXPECT_EQ(grids[2].v[0].size(), 3);
+    EXPECT_EQ(grids[2].f.size(),    5);
+    EXPECT_EQ(grids[2].f[0].size(), 3);
+
+    std::size_t n_x_level = grids[0].v.size();
+    std::size_t n_y_level = grids[0].v[0].size();
+
+    for (std::size_t i = 1; i < n_x_level - 1; ++i) {
+        EXPECT_EQ(grids[0].v[i][0], 2.0);
+        EXPECT_EQ(grids[0].v[i][n_y_level-1], 1.0);
+    }
+
+    for (std::size_t j = 1; j < n_y_level - 1; ++j) {
+        EXPECT_EQ(grids[0].v[0][j], 3.0);
+        EXPECT_EQ(grids[0].v[n_x_level-1][j], 4.0);
+    }
+
+    EXPECT_EQ(grids[0].v[0][0], 0.5 * (3.0 + 2.0));
+    EXPECT_EQ(grids[0].v[n_x_level - 1][0], 0.5 * (4.0 + 2.0));
+    EXPECT_EQ(grids[0].v[0][n_y_level - 1], 0.5 * (3.0 + 1.0));
+    EXPECT_EQ(grids[0].v[n_x_level - 1][n_y_level - 1], 0.5 * (4.0 + 1.0));
 }

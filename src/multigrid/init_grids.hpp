@@ -20,7 +20,8 @@ namespace multigrid {
         Func2D u_guess,
         const Domain2D& dom,
         const BoundaryCond2D& bc,
-        unsigned int sub_int,
+        unsigned int sub_int_x,
+        unsigned int sub_int_y,
         double h_x,
         double h_y
     );

@@ -5,7 +5,7 @@
 
 namespace multigrid {
     std::optional<MG1DResults> run(
-        const ModHelmholtz& pde,
+        const ModHelmholtz1D& pde,
         const Config& config,
         const std::optional<Func1D>& u_exact,
         Func1D u_guess
@@ -57,8 +57,8 @@ namespace multigrid {
     // std::optional<MG2DResults> run(
     //     const ModHelmholtz& pde,
     //     const Config& config,
-    //     const std::optional<Func1D>& u_exact,
-    //     Func1D u_guess
+    //     const std::optional<Func2D>& u_exact,
+    //     Func2D u_guess
     // )
     // {
     //     if (config.sub_int == 0) {
@@ -77,8 +77,9 @@ namespace multigrid {
     //     }
 
     //     MG1DResults results;
-    //     double h = (pde.dom.x_max - pde.dom.x_min) / config.sub_int;
-    //     std::vector<Grid1D> grids = init_grids(pde.f, u_guess, pde.dom, pde.bc, config.sub_int, h);
+    //     double h_x = (pde.dom.x_max - pde.dom.x_min) / config.sub_int_x;
+    //     double h_y = (pde.dom.y_max - pde.dom.y_min) / config.sub_int_y;
+    //     std::vector<Grid2D> grids = init_grids(pde.f, u_guess, pde.dom, pde.bc, config.sub_int, h);
 
     //     logger::info("Running multigrid...");
     //     auto start = std::chrono::high_resolution_clock::now();
