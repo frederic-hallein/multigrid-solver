@@ -19,6 +19,8 @@ class Config {
 public:
     unsigned int dim;
     unsigned int sub_int;
+    unsigned int sub_int_x;
+    unsigned int sub_int_y;
     unsigned int num_iter;
     double tolerance;
     SmootherParam smoother_param;
@@ -28,7 +30,7 @@ public:
     std::pair<std::string, Norm> norm;
 
 public:
-    Config() {
+    Config() : dim(0), sub_int(0), sub_int_x(0), sub_int_y(0), num_iter(0), tolerance(1.0e-10){
         load_config(CONFIG_PATH);
         log_config_summary();
     }
@@ -45,25 +47,25 @@ public:
     }
 
 private:
-    std::unordered_map<std::string, Smoother> smoother_map{
+    std::unordered_map<std::string_view, Smoother> smoother_map{
         {"J"   , multigrid::cart_1d::jacobi},
         {"GS"  , multigrid::cart_1d::gauss_seidel},
         {"RBGS", multigrid::cart_1d::red_black_gauss_seidel}
     };
 
-    std::unordered_map<std::string, Cycle<Grid1D>> cycle_map_1d{
+    std::unordered_map<std::string_view, Cycle<Grid1D>> cycle_map_1d{
         {"V", multigrid::v_cycle},
         {"F", multigrid::f_cycle},
         {"W", multigrid::w_cycle}
     };
 
-    std::unordered_map<std::string, Cycle<Grid2D>> cycle_map_2d{
-        // {"V", multigrid::v_cycle},
-        // {"F", multigrid::f_cycle},
-        // {"W", multigrid::w_cycle}
-    };
+    // std::unordered_map<std::string_view, Cycle<Grid2D>> cycle_map_2d{
+    //     {"V", multigrid::v_cycle},
+    //     {"F", multigrid::f_cycle},
+    //     {"W", multigrid::w_cycle}
+    // };
 
-    std::unordered_map<std::string, Norm> norm_map{
+    std::unordered_map<std::string_view, Norm> norm_map{
         {"L2"  , norm::L2},
         {"LINF", norm::Linf}
     };
@@ -105,7 +107,17 @@ private:
             }
 
             dim = yaml["grid"]["dim"].as<unsigned int>();
-            sub_int = yaml["grid"]["sub_intervals"].as<unsigned int>();
+            if (dim == 1) {
+                sub_int = yaml["grid"]["sub_intervals"].as<unsigned int>();
+            } else if (dim == 2) {
+                auto sub_int_node = yaml["grid"]["sub_intervals"];
+                if (!sub_int_node || !sub_int_node["x"] || !sub_int_node["y"]) {
+                    throw std::runtime_error("Missing parameter: grid.sub_intervals.x or grid.sub_intervals.y");
+                }
+                sub_int_x = sub_int_node["x"].as<unsigned int>();
+                sub_int_y = sub_int_node["y"].as<unsigned int>();
+            }
+
             num_iter = yaml["solver"]["num_iterations"].as<unsigned int>();
             tolerance = yaml["solver"]["tolerance"].as<double>();
 

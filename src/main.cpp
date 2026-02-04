@@ -1,10 +1,6 @@
 #include "multigrid/pde.hpp"
 #include "multigrid/run.hpp"
 
-// #include "multigrid/cartesian_2d/pde.hpp"
-// #include "multigrid/cartesian_2d/run.hpp"
-
-
 double u_exact(double x) {
     return x * (1.0 - x);
 }
