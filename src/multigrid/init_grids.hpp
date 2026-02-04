@@ -9,16 +9,19 @@ namespace multigrid {
     std::vector<Grid1D> init_grids(
         Func1D rhs_func,
         Func1D u_guess,
-        Domain1D dom,
-        BoundaryCond1D bc,
-        unsigned int sub_int
+        const Domain1D& dom,
+        const BoundaryCond1D& bc,
+        unsigned int sub_int,
+        double h
     );
 
     std::vector<Grid2D> init_grids(
         Func2D rhs_func,
         Func2D u_guess,
-        Domain2D dom,
-        BoundaryCond2D bc,
-        unsigned int sub_int
+        const Domain2D& dom,
+        const BoundaryCond2D& bc,
+        unsigned int sub_int,
+        double h_x,
+        double h_y
     );
 }

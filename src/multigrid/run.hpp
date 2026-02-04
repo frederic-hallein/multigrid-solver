@@ -17,6 +17,6 @@ namespace multigrid {
         const ModHelmholtz& pde,
         const Config& config,
         const std::optional<Func1D>& u_exact = std::nullopt,
-        const Func1D& u_guess = [](double) { return 0.0; }
+        Func1D u_guess = [](double) { return 0.0; }
     );
 }

@@ -10,7 +10,8 @@ TEST(multigrid, init_grids_1d) {
     Domain1D dom{0.0, 1.0};
     BoundaryCond1D bc{boundary, boundary};
 
-    auto grids = multigrid::init_grids(rhs, u_guess, dom, bc, n);
+    double h = (dom.x_max - dom.x_min) / n;
+    auto grids = multigrid::init_grids(rhs, u_guess, dom, bc, n, h);
 
     ASSERT_EQ(grids.size(), 4);
 
@@ -38,7 +39,9 @@ TEST(multigrid, init_grids_2d) {
     Domain2D dom{0.0, 1.0, 0.0, 1.0};
     BoundaryCond2D bc{bc_left, bc_right, bc_bottom, bc_top};
 
-    auto grids = multigrid::init_grids(rhs, u_guess, dom, bc, n);
+    double h_x = (dom.x_max - dom.x_min) / n;
+    double h_y = (dom.y_max - dom.y_min) / n;
+    auto grids = multigrid::init_grids(rhs, u_guess, dom, bc, n, h_x, h_y);
 
     ASSERT_EQ(grids.size(), 4);
 
