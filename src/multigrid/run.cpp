@@ -61,25 +61,25 @@ namespace multigrid {
         Func2D u_guess
     )
     {
-        // if (config.sub_int_x == 0 || config.sub_int_y == 0) {
-        //     logger::error("Sub intervals cannot be 0.");
-        //     return std::nullopt;
-        // }
+        if (config.sub_int_x == 0 || config.sub_int_y == 0) {
+            logger::error("Sub intervals cannot be 0.");
+            return std::nullopt;
+        }
 
-        // if (config.sub_int_x % 2 != 0) {
-        //     logger::error("Sub interval in x-direction are not a multiple of 2.");
-        //     return std::nullopt;
-        // }
+        if (config.sub_int_x % 2 != 0) {
+            logger::error("Sub interval in x-direction are not a multiple of 2.");
+            return std::nullopt;
+        }
 
-        // if (config.sub_int_y % 2 != 0) {
-        //     logger::error("Sub interval in y-direction are not a multiple of 2.");
-        //     return std::nullopt;
-        // }
+        if (config.sub_int_y % 2 != 0) {
+            logger::error("Sub interval in y-direction are not a multiple of 2.");
+            return std::nullopt;
+        }
 
-        // MG2DResults results;
-        // double h_x = (pde.dom.x_max - pde.dom.x_min) / config.sub_int_x;
-        // double h_y = (pde.dom.y_max - pde.dom.y_min) / config.sub_int_y;
-        // std::vector<Grid2D> grids = init_grids(pde.f, u_guess, pde.dom, pde.bc, config.sub_int_x, config.sub_int_y, h_x, h_y);
+        MG2DResults results;
+        double h_x = (pde.dom.x_max - pde.dom.x_min) / config.sub_int_x;
+        double h_y = (pde.dom.y_max - pde.dom.y_min) / config.sub_int_y;
+        std::vector<Grid2D> grids = init_grids(pde.f, u_guess, pde.dom, pde.bc, config.sub_int_x, config.sub_int_y, h_x, h_y);
 
         // logger::info("Running multigrid...");
         // auto start = std::chrono::high_resolution_clock::now();
