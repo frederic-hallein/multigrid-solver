@@ -1,6 +1,7 @@
 #include "../common/logger.hpp"
 #include "init_grids.hpp"
 
+// TODO : use templates instead of function overloading
 namespace multigrid {
     std::vector<Grid1D> init_grids(
         Func1D rhs_func,
@@ -49,9 +50,20 @@ namespace multigrid {
         logger::info("Created {} level multigrid", grids.size());
         return grids;
     }
-}
 
-namespace multigrid::cartesian_2d {
+
+    //   y ^
+    //     |
+    // n-1 o---o---o---...---o
+    //     |   |   |         |
+    //     o---o---o---...---o
+    //     |   |   |         |
+    //     .   .   .         .
+    //     |   |   |         |
+    //     o---o---o---...---o
+    // 0   o---o---o---...---o -> x
+    //
+    //     0   1   2        n-1
     std::vector<Grid2D> init_grids(
         Func2D rhs_func,
         Func2D u_guess,
@@ -67,7 +79,7 @@ namespace multigrid::cartesian_2d {
         unsigned int sub_int_current_grid = sub_int;
         while (sub_int_current_grid >= 2) {
             unsigned int n = sub_int_current_grid + 1;
-            double h_x = (dom.x_max - dom.x_min) / sub_int_current_grid;
+            double h_x = (dom.x_max - dom.x_min) / sub_int_current_grid; // TODO : allow non-square grid
             double h_y = (dom.y_max - dom.y_min) / sub_int_current_grid;
             std::vector<std::vector<double>> v(n, std::vector<double>(n, 0.0));
             std::vector<std::vector<double>> f(n, std::vector<double>(n, 0.0));
@@ -93,10 +105,10 @@ namespace multigrid::cartesian_2d {
                 }
 
                 // take average at corners
-                v[0][0]     = 0.5 * (bc.left(dom.x_min, dom.y_min)   + bc.bottom(dom.x_min, dom.y_min));
-                v[n-1][0]   = 0.5 * (bc.right(dom.x_max, dom.y_min)  + bc.bottom(dom.x_max, dom.y_min));
-                v[0][n-1]   = 0.5 * (bc.left(dom.x_min, dom.y_max)   + bc.top(dom.x_min, dom.y_max));
-                v[n-1][n-1] = 0.5 * (bc.right(dom.x_max, dom.y_max)  + bc.top(dom.x_max, dom.y_max));
+                v[0][0]     = 0.5 * (bc.left(dom.x_min, dom.y_min)  + bc.bottom(dom.x_min, dom.y_min)); // bottom-left
+                v[n-1][0]   = 0.5 * (bc.right(dom.x_max, dom.y_min) + bc.bottom(dom.x_max, dom.y_min)); // bottom-right
+                v[0][n-1]   = 0.5 * (bc.left(dom.x_min, dom.y_max)  + bc.top(dom.x_min, dom.y_max));    // top-left
+                v[n-1][n-1] = 0.5 * (bc.right(dom.x_max, dom.y_max) + bc.top(dom.x_max, dom.y_max));    // top-right
 
                 is_finest = false;
             }

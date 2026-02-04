@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "multigrid/operations.hpp"
+#include "../src/multigrid/operations.hpp"
 
 TEST(multigrid_operations, compute_residual) {
     // For u = x(1-x) on [0,1], f = -u'' + 0*u = 2

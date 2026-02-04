@@ -14,6 +14,7 @@
 
 const std::string CONFIG_PATH = "../data/config.yaml";
 
+// TODO : add implementation file
 class Config {
 public:
     unsigned int dim;
@@ -26,6 +27,7 @@ public:
     std::pair<std::string, Cycle<Grid1D>> cycle; // std::pair<std::string, std::variant<Cycle<Grid1D>, Cycle<Grid2D>>> cycle;
     std::pair<std::string, Norm> norm;
 
+public:
     Config() {
         load_config(CONFIG_PATH);
         log_config_summary();
@@ -66,6 +68,7 @@ private:
         {"LINF", norm::Linf}
     };
 
+private:
     void load_config(const std::string& filepath) {
         try {
             YAML::Node yaml = YAML::LoadFile(filepath);
