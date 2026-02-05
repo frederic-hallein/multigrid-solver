@@ -3,6 +3,7 @@
 #include <functional>
 #include <vector>
 
+#include "../multigrid/grid.hpp"
 #include "smoother_param.hpp"
 
 using Func1D = std::function<double(double)>;
@@ -18,10 +19,21 @@ using Smoother = std::function<void(
     double
 )>;
 
-template<typename Grid>
-using Cycle = std::function<void(
-    std::vector<Grid>&,
+using Cycle1D = std::function<void(
+    std::vector<Grid1D>&,
     std::size_t,
+    double,
+    double,
+    double,
+    const Smoother&,
+    const SmootherParam&
+)>;
+
+
+using Cycle2D = std::function<void(
+    std::vector<Grid2D>&,
+    std::size_t,
+    double,
     double,
     double,
     double,

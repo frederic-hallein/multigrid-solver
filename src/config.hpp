@@ -3,9 +3,9 @@
 #include <unordered_map>
 #include <string>
 #include <yaml-cpp/yaml.h>
+#include <variant>
 
 #include "common/logger.hpp"
-#include "multigrid/grid.hpp"
 #include "common/type_alias.hpp"
 #include "common/norm.hpp"
 #include "common/smoother_param.hpp"
@@ -26,7 +26,7 @@ public:
     SmootherParam smoother_param;
     std::pair<std::string, Smoother> smoother;
     double omega;
-    std::pair<std::string, Cycle<Grid1D>> cycle; // std::pair<std::string, std::variant<Cycle<Grid1D>, Cycle<Grid2D>>> cycle;
+    std::pair<std::string, std::variant<Cycle1D, Cycle2D>> cycle;
     std::pair<std::string, Norm> norm;
 
 public:
@@ -47,25 +47,25 @@ public:
     }
 
 private:
-    std::unordered_map<std::string_view, Smoother> smoother_map{
+    std::unordered_map<std::string, Smoother> smoother_map{
         {"J"   , multigrid::cart_1d::jacobi},
         {"GS"  , multigrid::cart_1d::gauss_seidel},
         {"RBGS", multigrid::cart_1d::red_black_gauss_seidel}
     };
 
-    std::unordered_map<std::string_view, Cycle<Grid1D>> cycle_map_1d{
-        {"V", multigrid::v_cycle},
-        {"F", multigrid::f_cycle},
-        {"W", multigrid::w_cycle}
+    std::unordered_map<std::string, Cycle1D> cycle_map_1d{
+        {"V", multigrid::dim1::v_cycle},
+        {"F", multigrid::dim1::f_cycle},
+        {"W", multigrid::dim1::w_cycle}
     };
 
-    // std::unordered_map<std::string_view, Cycle<Grid2D>> cycle_map_2d{
-    //     {"V", multigrid::v_cycle},
-    //     {"F", multigrid::f_cycle},
-    //     {"W", multigrid::w_cycle}
-    // };
+    std::unordered_map<std::string, Cycle2D> cycle_map_2d{
+        {"V", multigrid::dim2::v_cycle}
+        // {"F", multigrid_2d::f_cycle},
+        // {"W", multigrid_2d::w_cycle}
+    };
 
-    std::unordered_map<std::string_view, Norm> norm_map{
+    std::unordered_map<std::string, Norm> norm_map{
         {"L2"  , norm::L2},
         {"LINF", norm::Linf}
     };
@@ -107,7 +107,7 @@ private:
             }
 
             dim = yaml["grid"]["dim"].as<unsigned int>();
-            if (dim == 1) {
+            if (dim == 1) { // TODO : maybe move all logic to their respective dimension
                 sub_int = yaml["grid"]["sub_intervals"].as<unsigned int>();
             } else if (dim == 2) {
                 auto sub_int_node = yaml["grid"]["sub_intervals"];
@@ -134,21 +134,21 @@ private:
             if (dim == 1) {
                 auto c_it = cycle_map_1d.find(cycle_key);
                 if (c_it != cycle_map_1d.end()) {
-                    cycle = std::make_pair(cycle_key, c_it->second);
+                    cycle = std::make_pair(cycle_key, std::variant<Cycle1D, Cycle2D>(c_it->second));
                 } else {
                     logger::warning("Unknown cycle '{}', using default: V.", cycle_key);
-                    cycle = std::make_pair("V", cycle_map_1d.at("V"));
+                    cycle = std::make_pair("V", std::variant<Cycle1D, Cycle2D>(cycle_map_1d.at("V")));
                 }
-            // } else if (dim == 2) {
-            //     auto c_it = cycle_map_2d.find(cycle_key);
-            //     if (c_it != cycle_map_2d.end()) {
-            //         cycle = std::make_pair(cycle_key, c_it->second);
-            //     } else {
-            //         logger::warning("Unknown cycle '{}', using default: V.", cycle_key);
-            //         // cycle = std::make_pair("V", cycle_map_2d.at("V"));
-            //     }
-            // } else {
-            //     throw std::runtime_error("Unsupported grid dimension: " + std::to_string(dim));
+            } else if (dim == 2) {
+                auto c_it = cycle_map_2d.find(cycle_key);
+                if (c_it != cycle_map_2d.end()) {
+                    cycle = std::make_pair(cycle_key, std::variant<Cycle1D, Cycle2D>(c_it->second));
+                } else {
+                    logger::warning("Unknown cycle '{}', using default: V.", cycle_key);
+                    cycle = std::make_pair("V", std::variant<Cycle1D, Cycle2D>(cycle_map_2d.at("V")));
+                }
+            } else {
+                throw std::runtime_error("Unsupported grid dimension: " + std::to_string(dim));
             }
 
             std::string norm_key = yaml["solver"]["norm"].as<std::string>();

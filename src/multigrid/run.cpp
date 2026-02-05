@@ -3,110 +3,112 @@
 #include "operations.hpp"
 #include "run.hpp"
 
-namespace multigrid {
-    std::optional<MG1DResults> run(
-        const ModHelmholtz1D& pde,
-        const Config& config,
-        const std::optional<Func1D>& u_exact,
-        Func1D u_guess
-    )
-    {
-        if (config.sub_int == 0) {
-            logger::error("Sub intervals cannot be 0.");
-            return std::nullopt;
-        }
-
-        if (config.sub_int % 2 != 0) {
-            logger::error("Sub intervals are not a multiple of 2.");
-            return std::nullopt;
-        }
-
-        MG1DResults results;
-        double h = (pde.dom.x_max - pde.dom.x_min) / config.sub_int;
-        std::vector<Grid1D> grids = init_grids(pde.f, u_guess, pde.dom, pde.bc, config.sub_int, h);
-
-        logger::info("Running multigrid...");
-        auto start = std::chrono::high_resolution_clock::now();
-        for (unsigned int iter = 1; iter <= config.num_iter; ++iter) {
-            config.cycle.second(grids, 0, h, pde.sigma, config.omega, config.smoother.second, config.smoother_param);
-
-            auto r = compute_residual(grids[0].v, grids[0].f, h, pde.sigma);
-            double residual_norm = config.norm.second(r);
-
-            results.v.push_back(grids[0].v);
-            results.residual_norm.push_back(residual_norm);
-
-            if (residual_norm < config.tolerance) {
-                auto end = std::chrono::high_resolution_clock::now();
-                std::chrono::duration<double> elapsed = end - start;
-                logger::info("Converged at iteration step ({}/{})", iter, config.num_iter);
-                logger::info("Elapsed time: {} seconds", elapsed.count());
-
-                save_grid_points("../data/grid_points.csv", pde.dom, h, config.sub_int);
-                save_solutions_csv("../data/solutions.csv", results.v);
-                save_convergence_history_csv("../data/convergence_history.csv", results.residual_norm, results.v, pde.dom, config.sub_int, config.norm.second, u_exact);
-
-                return results;
-            }
-        }
-
-        logger::error("Did not converge within the maximum number of iterations ({}).", config.num_iter);
+namespace multigrid::dim1 {
+std::optional<MG1DResults> run(
+    const ModHelmholtz1D& pde,
+    const Config& config,
+    const std::optional<Func1D>& u_exact,
+    Func1D u_guess
+)
+{
+    if (config.sub_int == 0) {
+        logger::error("Sub intervals cannot be 0.");
         return std::nullopt;
     }
 
-    std::optional<MG2DResults> run(
-        const ModHelmholtz2D& pde,
-        const Config& config,
-        const std::optional<Func2D>& u_exact,
-        Func2D u_guess
-    )
-    {
-        if (config.sub_int_x == 0 || config.sub_int_y == 0) {
-            logger::error("Sub intervals cannot be 0.");
-            return std::nullopt;
-        }
-
-        if (config.sub_int_x % 2 != 0) {
-            logger::error("Sub interval in x-direction are not a multiple of 2.");
-            return std::nullopt;
-        }
-
-        if (config.sub_int_y % 2 != 0) {
-            logger::error("Sub interval in y-direction are not a multiple of 2.");
-            return std::nullopt;
-        }
-
-        MG2DResults results;
-        double h_x = (pde.dom.x_max - pde.dom.x_min) / config.sub_int_x;
-        double h_y = (pde.dom.y_max - pde.dom.y_min) / config.sub_int_y;
-        std::vector<Grid2D> grids = init_grids(pde.f, u_guess, pde.dom, pde.bc, config.sub_int_x, config.sub_int_y, h_x, h_y);
-
-        // logger::info("Running multigrid...");
-        // auto start = std::chrono::high_resolution_clock::now();
-        // for (unsigned int iter = 1; iter <= config.num_iter; ++iter) {
-        //     config.cycle.second(grids, 0, h, pde.sigma, config.omega, config.smoother.second, config.smoother_param);
-
-        //     auto r = compute_residual(grids[0].v, grids[0].f, h, pde.sigma);
-        //     double residual_norm = config.norm.second(r);
-
-        //     results.v.push_back(grids[0].v);
-        //     results.residual_norm.push_back(residual_norm);
-
-        //     if (residual_norm < config.tolerance) {
-        //         auto end = std::chrono::high_resolution_clock::now();
-        //         std::chrono::duration<double> elapsed = end - start;
-        //         logger::info("Converged at iteration step ({}/{})", iter, config.num_iter);
-        //         logger::info("Elapsed time: {} seconds", elapsed.count());
-
-        //         save_grid_points("../data/grid_points.csv", pde.dom, h, config.sub_int);
-        //         save_solutions_csv("../data/solutions.csv", results.v);
-        //         save_convergence_history_csv("../data/convergence_history.csv", results.residual_norm, results.v, pde.dom, config.sub_int, config.norm.second, u_exact);
-
-        //         return results;
-        //     }
-        // }
-
-        logger::error("Did not converge within the maximum number of iterations ({}).", config.num_iter);
+    if (config.sub_int % 2 != 0) {
+        logger::error("Sub intervals are not a multiple of 2.");
         return std::nullopt;
     }
+
+    MG1DResults results;
+    double h = (pde.dom.x_max - pde.dom.x_min) / config.sub_int;
+    std::vector<Grid1D> grids = init_grids(pde.f, u_guess, pde.dom, pde.bc, config.sub_int, h);
+
+    logger::info("Running multigrid...");
+    auto start = std::chrono::high_resolution_clock::now();
+    for (unsigned int iter = 1; iter <= config.num_iter; ++iter) {
+        std::get<Cycle1D>(config.cycle.second)(grids, 0, h, pde.sigma, config.omega, config.smoother.second, config.smoother_param);
+
+        auto r = compute_residual(grids[0].v, grids[0].f, h, pde.sigma);
+        double residual_norm = config.norm.second(r);
+
+        results.v.push_back(grids[0].v);
+        results.residual_norm.push_back(residual_norm);
+
+        if (residual_norm < config.tolerance) {
+            auto end = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double> elapsed = end - start;
+            logger::info("Converged at iteration step ({}/{})", iter, config.num_iter);
+            logger::info("Elapsed time: {} seconds", elapsed.count());
+
+            save_grid_points("../data/grid_points.csv", pde.dom, h, config.sub_int);
+            save_solutions_csv("../data/solutions.csv", results.v);
+            save_convergence_history_csv("../data/convergence_history.csv", results.residual_norm, results.v, pde.dom, config.sub_int, config.norm.second, u_exact);
+
+            return results;
+        }
+    }
+
+    logger::error("Did not converge within the maximum number of iterations ({}).", config.num_iter);
+    return std::nullopt;
+}
+}
+
+namespace multigrid::dim2 {
+std::optional<MG2DResults> run(
+    const ModHelmholtz2D& pde,
+    const Config& config,
+    const std::optional<Func2D>& u_exact,
+    Func2D u_guess
+)
+{
+    if (config.sub_int_x == 0 || config.sub_int_y == 0) {
+        logger::error("Sub intervals cannot be 0.");
+        return std::nullopt;
+    }
+
+    if (config.sub_int_x % 2 != 0) {
+        logger::error("Sub interval in x-direction are not a multiple of 2.");
+        return std::nullopt;
+    }
+
+    if (config.sub_int_y % 2 != 0) {
+        logger::error("Sub interval in y-direction are not a multiple of 2.");
+        return std::nullopt;
+    }
+
+    MG2DResults results;
+    double h_x = (pde.dom.x_max - pde.dom.x_min) / config.sub_int_x;
+    double h_y = (pde.dom.y_max - pde.dom.y_min) / config.sub_int_y;
+    std::vector<Grid2D> grids = init_grids(pde.f, u_guess, pde.dom, pde.bc, config.sub_int_x, config.sub_int_y, h_x, h_y);
+
+    logger::info("Running multigrid...");
+    auto start = std::chrono::high_resolution_clock::now();
+    for (unsigned int iter = 1; iter <= config.num_iter; ++iter) {
+        std::get<Cycle2D>(config.cycle.second)(grids, 0, h_x, h_y, pde.sigma, config.omega, config.smoother.second, config.smoother_param);
+
+    //     auto r = compute_residual(grids[0].v, grids[0].f, h, pde.sigma);
+    //     double residual_norm = config.norm.second(r);
+
+    //     results.v.push_back(grids[0].v);
+    //     results.residual_norm.push_back(residual_norm);
+
+    //     if (residual_norm < config.tolerance) {
+    //         auto end = std::chrono::high_resolution_clock::now();
+    //         std::chrono::duration<double> elapsed = end - start;
+    //         logger::info("Converged at iteration step ({}/{})", iter, config.num_iter);
+    //         logger::info("Elapsed time: {} seconds", elapsed.count());
+
+    //         save_grid_points("../data/grid_points.csv", pde.dom, h, config.sub_int);
+    //         save_solutions_csv("../data/solutions.csv", results.v);
+    //         save_convergence_history_csv("../data/convergence_history.csv", results.residual_norm, results.v, pde.dom, config.sub_int, config.norm.second, u_exact);
+
+    //         return results;
+    //     }
+    }
+
+    logger::error("Did not converge within the maximum number of iterations ({}).", config.num_iter);
+    return std::nullopt;
+}
 }

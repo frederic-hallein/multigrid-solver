@@ -11,7 +11,7 @@ TEST(multigrid, init_grids_1d) {
     BoundaryCond1D bc{boundary, boundary};
 
     double h = (dom.x_max - dom.x_min) / n;
-    auto grids = multigrid::init_grids(rhs, u_guess, dom, bc, n, h);
+    auto grids = multigrid::dim1::init_grids(rhs, u_guess, dom, bc, n, h);
 
     ASSERT_EQ(grids.size(), 4);
 
@@ -42,7 +42,7 @@ TEST(multigrid, init_grids_2d_square) {
 
     double h_x = (dom.x_max - dom.x_min) / n_x;
     double h_y = (dom.y_max - dom.y_min) / n_y;
-    auto grids = multigrid::init_grids(rhs, u_guess, dom, bc, n_x, n_y, h_x, h_y);
+    auto grids = multigrid::dim2::init_grids(rhs, u_guess, dom, bc, n_x, n_y, h_x, h_y);
 
     ASSERT_EQ(grids.size(), 4);
 
@@ -103,7 +103,7 @@ TEST(multigrid, init_grids_2d_non_square) {
 
     double h_x = (dom.x_max - dom.x_min) / n_x;
     double h_y = (dom.y_max - dom.y_min) / n_y;
-    auto grids = multigrid::init_grids(rhs, u_guess, dom, bc, n_x, n_y, h_x, h_y);
+    auto grids = multigrid::dim2::init_grids(rhs, u_guess, dom, bc, n_x, n_y, h_x, h_y);
 
     ASSERT_EQ(grids.size(), 3);
 

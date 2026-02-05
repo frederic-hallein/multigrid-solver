@@ -23,7 +23,7 @@ int main() {
         [](double) { return 2.0; }
     };
 
-    auto results = multigrid::run(pde, config, u_exact);
+    auto results = multigrid::dim1::run(pde, config, u_exact);
 
     // multigrid::ModHelmholtz pde {
     //     0.0,
