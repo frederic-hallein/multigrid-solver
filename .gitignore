@@ -4,3 +4,4 @@ plotting/.venv
 plotting/__pycache__/
 data/*.csv
 plotting/plots/*.png
+.vscode/
