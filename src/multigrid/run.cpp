@@ -88,8 +88,8 @@ std::optional<MG2DResults> run(
     for (unsigned int iter = 1; iter <= config.num_iter; ++iter) {
         std::get<Cycle2D>(config.cycle.second)(grids, 0, h_x, h_y, pde.sigma, config.omega, config.smoother.second, config.smoother_param);
 
-    //     auto r = compute_residual(grids[0].v, grids[0].f, h, pde.sigma);
-    //     double residual_norm = config.norm.second(r);
+        auto r = compute_residual(grids[0].v, grids[0].f, h_x, h_y, pde.sigma);
+        // double residual_norm = config.norm.second(r);
 
     //     results.v.push_back(grids[0].v);
     //     results.residual_norm.push_back(residual_norm);

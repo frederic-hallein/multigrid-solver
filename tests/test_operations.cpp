@@ -2,25 +2,61 @@
 
 #include "../src/multigrid/operations.hpp"
 
-TEST(multigrid_operations, compute_residual) {
-    // For u = x(1-x) on [0,1], f = -u'' + 0*u = 2
+TEST(multigrid_operations, compute_1d_residual) {
+    // For u = x(1-x) on [0,1]
+    // f = -Δu + 0*u = -u'' + 0*u = 2
     double h = 1.0 / 4.0;  // 5 grid points: 0, 0.25, 0.5, 0.75, 1.0
     double sigma = 0.0;
 
     std::vector<double> v = {0.0, 0.1875, 0.25, 0.1875, 0.0};  // u = x(1-x)
     std::vector<double> f = {0.0, 2.0, 2.0, 2.0, 0.0};
 
-    std::vector<double> r = multigrid::compute_residual(v, f, h, sigma);
+    std::vector<double> r = multigrid::dim1::compute_residual(v, f, h, sigma);
 
     // Expected residual: r = f - A*v
     // A*v = (-v[i-1] + 2*v[i] - v[i+1]) / h²
-    // For interior points (i=1,2,3): A*v ≈ 2, so r ≈ f - 2 ≈ 0
     EXPECT_EQ(r.size(), v.size());
     EXPECT_NEAR(r[0], 0.0, 1e-10);  // Boundary
-    EXPECT_NEAR(r[1], 0.0, 0.1);    // Interior (with tolerance)
-    EXPECT_NEAR(r[2], 0.0, 0.1);    // Interior (with tolerance)
-    EXPECT_NEAR(r[3], 0.0, 0.1);    // Interior (with tolerance)
+    EXPECT_NEAR(r[1], 0.0, 0.1);    // Interior
+    EXPECT_NEAR(r[2], 0.0, 0.1);    // Interior
+    EXPECT_NEAR(r[3], 0.0, 0.1);    // Interior
     EXPECT_NEAR(r[4], 0.0, 1e-10);  // Boundary
+}
+
+TEST(multigrid_operations, compute_2d_residual) {
+    // For u(x,y) = x(1-x)y(1-y) on [0,1] x [0,1]
+    // f = -Δu + 0*u = 2(y(1-y) + x(1-x))
+    double h_x = 0.5; // 3 grid points: 0, 0.5, 1.0
+    double h_y = 0.5; // 3 grid points: 0, 0.5, 1.0
+    double sigma = 0.0;
+
+    // A*v = x_i * (1 - x_i) * y_j * (1 - y_j)
+    std::vector<std::vector<double>> v = {
+        {0.0, 0.0, 0.0},
+        {0.0, 0.0625, 0.0},
+        {0.0, 0.0, 0.0}
+    };
+
+    // f[i][j] = 2 * (y_j * (1 - y_j) + x_i * (1 - x_i))
+    std::vector<std::vector<double>> f = {
+        {0.0, 0.0, 0.0},
+        {0.0, 0.5, 0.0},
+        {0.0, 0.0, 0.0}
+    };
+
+    auto r = multigrid::dim2::compute_residual(v, f, h_x, h_y, sigma);
+
+    EXPECT_EQ(r.size(), v.size());
+    EXPECT_EQ(r[0].size(), v[0].size());
+
+    EXPECT_NEAR(r[0][0], 0.0, 1e-10);
+    EXPECT_NEAR(r[0][1], 0.0, 1e-10);
+    EXPECT_NEAR(r[0][2], 0.0, 1e-10);
+    EXPECT_NEAR(r[2][0], 0.0, 1e-10);
+    EXPECT_NEAR(r[2][1], 0.0, 1e-10);
+    EXPECT_NEAR(r[2][2], 0.0, 1e-10);
+
+    EXPECT_NEAR(r[1][1], -0.4, 0.1);
 }
 
 TEST(multigrid_operations, restrict_residual) {
@@ -28,7 +64,7 @@ TEST(multigrid_operations, restrict_residual) {
     // Coarse grid: 5 points (indices 0-4)
     std::vector<double> residual = {0.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 0.0};
 
-    std::vector<double> coarse_residual = multigrid::restrict_residual(residual);
+    std::vector<double> coarse_residual = multigrid::dim1::restrict_residual(residual);
 
     // Expected size: 9 / 2 + 1 = 5
     EXPECT_EQ(coarse_residual.size(), 5);
@@ -58,7 +94,7 @@ TEST(multigrid_operations, prolongate) {
     // Fine grid: 9 points (indices 0-8)
     std::vector<double> v2h = {0.0, 1.0, 2.0, 1.0, 0.0};
 
-    std::vector<double> vh = multigrid::prolongate(v2h);
+    std::vector<double> vh = multigrid::dim1::prolongate(v2h);
 
     // Expected size: 5 * 2 - 1 = 9
     EXPECT_EQ(vh.size(), 9);
@@ -89,10 +125,10 @@ TEST(multigrid_operations, prolongate_restrict_roundtrip) {
     std::vector<double> original = {0.0, 1.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 0.0};
 
     // Restrict fine to coarse
-    std::vector<double> coarse = multigrid::restrict_residual(original);
+    std::vector<double> coarse = multigrid::dim1::restrict_residual(original);
 
     // Prolongate coarse back to fine
-    std::vector<double> recovered = multigrid::prolongate(coarse);
+    std::vector<double> recovered = multigrid::dim1::prolongate(coarse);
 
     // Should have same size
     EXPECT_EQ(recovered.size(), original.size());
@@ -109,7 +145,7 @@ TEST(multigrid_operations, direct_solve) {
     double h = 0.25;
     double sigma = 1.0;
 
-    std::vector<double> x = multigrid::direct_solve(f, h, sigma);
+    std::vector<double> x = multigrid::dim1::direct_solve(f, h, sigma);
 
     // Solution should be finite and satisfy boundary conditions
     EXPECT_NEAR(x[0], 0.0, 1e-10);
@@ -128,7 +164,7 @@ TEST(multigrid_operations, direct_solve_zero_rhs) {
     double h = 0.25;
     double sigma = 1.0;
 
-    std::vector<double> x = multigrid::direct_solve(f, h, sigma);
+    std::vector<double> x = multigrid::dim1::direct_solve(f, h, sigma);
 
     for (std::size_t i = 0; i < x.size(); ++i) {
         EXPECT_NEAR(x[i], 0.0, 1e-10);

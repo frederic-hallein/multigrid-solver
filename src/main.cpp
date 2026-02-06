@@ -13,6 +13,7 @@ double u_exact(double x) {
 int main() {
 
     Config config;
+
     ModHelmholtz1D pde {
         0.0,
         Domain1D { 0.0, 1.0 },
@@ -22,10 +23,9 @@ int main() {
         },
         [](double) { return 2.0; }
     };
-
     auto results = multigrid::dim1::run(pde, config, u_exact);
 
-    // multigrid::ModHelmholtz pde {
+    // ModHelmholtz2D pde {
     //     0.0,
     //     Domain2D {
     //         0.0, 1.0,
@@ -37,10 +37,7 @@ int main() {
     //     },
     //     [](double x, double y) { return 2.0 * ((1.0 - 6.0 * x * x) * y * y * (1.0 - y * y) + (1.0 - 6.0 * y * y) * x * x * (1.0 - x * x)); }
     // };
-
-    // auto results = multigrid::cartesian_2d::run(
-    //     pde, config, u_exact
-    // );
+    // auto results = multigrid::dim2::run(pde, config, u_exact);
 
     return 0;
 }
